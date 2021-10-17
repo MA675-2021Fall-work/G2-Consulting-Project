@@ -14,16 +14,18 @@ mmc_data[mmc_data=="                        "] <- NA
 
 data.frame(colnames(mmc_data))
 
-mmc_subset <-  mmc_data[c(264:266, 1:10, 48:80, 262)]
+mmc_subset_ICD10 <-  mmc_data[c(264:266, 1:10, 48:80, 262)]
 
-data.frame(colnames(mmc_subset))
-
-
+data.frame(colnames(mmc_subset_ICD10))
 
 
-mmc_subset <- mmc_subset[complete.cases(mmc_subset$ICD10.diagnosis.codes.1),]
+mmc_subset_ICD10 <- mmc_subset_ICD10[complete.cases(mmc_subset_ICD10$ICD10.diagnosis.codes.1),]
 
 ## ____________________
 
 mmc_subset_ICD9_ICD10 <- mmc_data[c(264:266, 1:10, 22:80, 262)]
+
+
+
+
 
