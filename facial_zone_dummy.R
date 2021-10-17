@@ -2,6 +2,7 @@
 
 library(tidyverse)
 
+
 mmc_data <- read.csv("1717262_Data_5.10.2021_deidentified.csv")
 
 # Removing blank coloumns
@@ -27,4 +28,15 @@ mmc_data <- mmc_data[, -c(266, 267)]
 
 ## Renaming midface.true to midface
 names(mmc_data)[names(mmc_data) == 'midface.true'] <- 'midface'
+
+
+## Creating Injury.Mech.category for column J
+mmc_data$Injury.Mech.category <- rep(NA,length(mmc_data$Injury.Mech))
+
+for (i in 1:length(mmc_data$Injury.Mech)){
+  if (str_detect(mmc_data$Injury.Mech[i],"Motorcycle")==TRUE){mmc_data$Injury.Mech.category[i]="MVC"}
+  if (str_detect(mmc_data$Injury.Mech[i],"Fall")==TRUE){mmc_data$Injury.Mech.category[i]="Falls"}
+  if (str_detect(mmc_data$Injury.Mech[i],"gun")==TRUE){mmc_data$Injury.Mech.category[i]="Gun"}
+}
+
 
