@@ -28,10 +28,3 @@ mmc_data <- mmc_data[, -c(266, 267)]
 ## Renaming midface.true to midface
 names(mmc_data)[names(mmc_data) == 'midface.true'] <- 'midface'
 
-
-
-
-
-
-
-
