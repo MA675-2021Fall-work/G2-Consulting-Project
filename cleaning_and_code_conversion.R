@@ -2,7 +2,7 @@ library(tidyverse)
 
 mmc_data <- read.csv("1717262_Data_5.10.2021_deidentified.csv")
 
-# Removing blank coloumns
+# Removing blank columns
 mmc_data <- mmc_data[, -c(264:369)] 
 
 # Removing blank row 319
