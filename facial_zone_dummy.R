@@ -1,4 +1,3 @@
-
 source("cleaning_and_code_conversion.R")
 
 ## Data cleaning, dummy variables
