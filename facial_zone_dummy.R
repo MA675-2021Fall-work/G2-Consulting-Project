@@ -43,6 +43,3 @@ for (i in 1:length(mmc_data$Injury.Mech)){
   if (str_detect(mmc_data$Injury.Mech[i],"Other|Assault|Biting|Pedestrian")==TRUE){mmc_data$Injury.Mech.category[i]="Others"}
 }
 
-## Creating test data frame to observe mechanisms vs category
-test <- data.frame(c(mmc_data[c(10)], mmc_subset_ICD10[c(13)]))
-
