@@ -1,12 +1,7 @@
 source("facial_zone_dummy.R")
+source("data_cleaning_subsetting.R")
 
-
-## creating dummy variables for age.18 and age.89 variables
-mmc_data$Age.18 <- ifelse(mmc_data$Age.18 == "*", 1, 0)
-mmc_data$Age.89 <- ifelse(mmc_data$Age.89 == "*", 1, 0)
 ##Converting the exiting ICD9 code to ICD10
-## creating another subset which includes both the ICD9 and ICD10 code columns
-mmc_subset_ICD9_ICD10 <- mmc_data[c(1:9, 264:267, 22:80, 262)]
 
 ##Replace NA with 0s in order to convert ICD9 codes to ICD10 codes
 df <- sapply(mmc_subset_ICD9_ICD10, as.character) 
