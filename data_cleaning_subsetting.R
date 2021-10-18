@@ -33,7 +33,7 @@ mmc_subset_ICD9 <- mmc_data[c(1:9, 264:267, 22:47, 262)]
 mmc_subset_ICD9 <- mmc_subset_ICD9[complete.cases(mmc_subset_ICD9_ICD10$ICD9.diagnosis.codes.1),]
 
 ## Creating test data frame to observe mechanisms vs category
-test <- data.frame(c(mmc_data[c(10)], mmc_subset_ICD9_ICD10[c(13)]))
+test <- mmc_data[c(10, 267)]
 
 
 
