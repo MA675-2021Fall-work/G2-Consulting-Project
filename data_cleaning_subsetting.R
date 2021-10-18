@@ -27,8 +27,10 @@ mmc_subset_ICD10_clean <- mmc_subset_ICD10[complete.cases(mmc_subset_ICD10$ICD10
 ## creating another subset which includes both the ICD9 and ICD10 code columns
 mmc_subset_ICD9_ICD10 <- mmc_data[c(1:9, 264:267, 22:80, 262)]
 
+
 ## removing rows that do not have a value in ICD.9.diagnosis.code.1 variable
-mmc_subset_ICD9_ICD10_conv <- mmc_subset_ICD9_ICD10[complete.cases(mmc_subset_ICD9_ICD10$ICD9.diagnosis.codes.1),]
+mmc_subset_ICD9_ICD10_conv <- mmc_data[c(1:9, 264:267, 22:47, 262)]
+mmc_subset_ICD9_ICD10_conv <- mmc_subset_ICD9_ICD10_conv[complete.cases(mmc_subset_ICD9_ICD10$ICD9.diagnosis.codes.1),]
 
 
 
