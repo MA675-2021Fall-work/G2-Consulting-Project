@@ -20,7 +20,7 @@ mmc_data[mmc_data=="                        "] <- NA
 mmc_subset_ICD10 <-  mmc_data[c(1:9, 264:267, 48:80, 262)]
 
 ## removing rows that do not have a value in the ICD10.diagnosis.code.1 variable
-mmc_subset_ICD10_clean <- mmc_subset_ICD10[complete.cases(mmc_subset_ICD10$ICD10.diagnosis.codes.1),]
+mmc_subset_ICD10 <- mmc_subset_ICD10[complete.cases(mmc_subset_ICD10$ICD10.diagnosis.codes.1),]
 
 # ____________________
 
