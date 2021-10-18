@@ -1,15 +1,7 @@
+
+source("cleaning_and_code_conversion.R")
+
 ## Data cleaning, dummy variables
-
-library(tidyverse)
-
-
-mmc_data <- read.csv("1717262_Data_5.10.2021_deidentified.csv")
-
-# Removing blank coloumns
-mmc_data <- mmc_data[, -c(264:369)] 
-
-# Removing blank row 319
-mmc_data <- mmc_data[-c(319),]
 
 ## Creating mandible dummy variable
 mmc_data$mandible <- ifelse(startsWith(mmc_data$ICD10.diagnosis.codes.1, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.2, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.3, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.4, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.5, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.6, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.7, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.8, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.9, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.10, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.12, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.13, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.14, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.15, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.16, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.17, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.18, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.19, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.20, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.21, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.22, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.23, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.24, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.25, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.26, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.27, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.28, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.29, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.30, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.31, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.32, "S02.6") | startsWith(mmc_data$ICD10.diagnosis.codes.33, "S02.6"), 1, 0)
@@ -32,6 +24,10 @@ mmc_data <- mmc_data[, -c(266, 267)]
 ## Renaming midface.true to midface
 names(mmc_data)[names(mmc_data) == 'midface.true'] <- 'midface'
 
+## Reinstering NA values
+mmc_data[mmc_data==" "] <- NA
+
+# --------------------
 
 ## Creating Injury.Mech.category for column J
 mmc_data$Injury.Mech.category <- rep(NA,length(mmc_data$Injury.Mech))
