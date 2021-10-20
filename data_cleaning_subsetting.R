@@ -6,12 +6,11 @@ source("facial_zone_dummy.R")
 ## creating first subset, only contains ICD10 code columns, with our Categorized column J
 mmc_subset_ICD10 <-  mmc_data[c(1:9, 264:267, 48:80)]
 
-## removing rows that do not have a value in the ICD10.diagnosis.code.1 variable
-mmc_subset_ICD10 <- mmc_subset_ICD10[complete.cases(mmc_subset_ICD10$ICD10.diagnosis.codes.1),]
-
 mmc_subset_ICD10$sum_dummy <- mmc_subset_ICD10$mandible + mmc_subset_ICD10$superior + mmc_subset_ICD10$midface
 
 mmc_subset_ICD10 <- subset(mmc_subset_ICD10, sum_dummy > 0)
+
+mmc_subset_ICD10 <- mmc_subset_ICD10[, -c(47)]
 
 visualization_subset <- mmc_subset_ICD10[c(9:13)]
 
