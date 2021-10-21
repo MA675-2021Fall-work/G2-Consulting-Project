@@ -14,6 +14,8 @@ mmc_subset_ICD10 <- mmc_subset_ICD10[, -c(47)]
 
 visualization_subset <- mmc_subset_ICD10[c(9:13)]
 
+cleaned_set <- mmc_subset_ICD10[c(1:6, 9:13)]
+
 # ____________________
 
 ## creating another subset which includes both the ICD9 and ICD10 code columns
