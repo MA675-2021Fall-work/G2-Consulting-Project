@@ -1,5 +1,8 @@
 # G2-Consulting-Project
 
+# Before cleaning, the dataset we have was 318 observations of 267 variables.
+# After cleaning, the dataset we have is 211 observations of 11 variables.
+
 # Background review:
 
 The study population will include patients that were evaluated and treated at Maine Medical Center between January 1 2016-December 31, 2020 following facial trauma withICD9 diagnosis codes 802-802.9 and ICD10 diagnosis codes containing S02 (except S02.0 and S02.11). 
@@ -34,6 +37,12 @@ When it comes to data cleaning. We followed the instruction the clients gave us 
 
 
 2. Categorization of codes (ICD10)
+   Among 318 patients, 311 of them have explicit injury mechanism records, 7 of them are blank or not clarifies clearly.
+   For 311 patients who have records, we extracted the key words of descriptions, and divided them into 4 categories. 
+  1) "Motorcycle","Bicycle","MVC" belong to "MVC"
+  2) "Fall under 1m", "Fall 1m-6m", "Fall over 6m" belong to "Falls"
+  3) "Hand gun", "Shotgun" belong to "gun"
+  4) "Other","Assault","Biting", "Pedestrian" belong to "other"
 
 
 
@@ -41,3 +50,9 @@ When it comes to data cleaning. We followed the instruction the clients gave us 
 # Some more problems that we will ask during the second meeting:
 1. When it comes to the ultimate goal of this project which is design a specific treatment for patient with different residency. We all think age and gender are matter as well. But there still some missing value for age variable. We will ask our client to clarify this for us.
 2. Another major difficulty that we are now encounting is that we seperate the injury areas and use 0 and 1 to check if the patient have injury on this area. As a result, we are now having three columns of outcomes, we need to figure out a way to convert them into one with some statistical meaningful levels.
+3. There are some missing data for injury mechanism/type, we are wondering if we can group those missing ones to the category "others" or not?
+4. We may also discuss the significance of procedures that patience received with client to see if that can be a predictor in some way?
+3. There are some missing data for injury mechanism/type, we are wondering if we can group those missing ones to the category "others" or not?
+5. For visualiztion, we will double check with our client to see if they want trauma sites as the outcome or they want to focus on residency of patients.
+6. 
+
