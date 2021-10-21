@@ -1,5 +1,8 @@
 # G2-Consulting-Project
 
+# Before cleaning, the dataset we have was 318 observations of 267 variables.
+# After cleaning, the dataset we have is 211 observations of 11 variables.
+
 # Background review:
 
 The study population will include patients that were evaluated and treated at Maine Medical Center between January 1 2016-December 31, 2020 following facial trauma withICD9 diagnosis codes 802-802.9 and ICD10 diagnosis codes containing S02 (except S02.0 and S02.11). 
@@ -42,7 +45,3 @@ When it comes to data cleaning. We followed the instruction the clients gave us 
 1. When it comes to the ultimate goal of this project which is design a specific treatment for patient with different residency. We all think age and gender are matter as well. But there still some missing value for age variable. We will ask our client to clarify this for us.
 2. Another major difficulty that we are now encounting is that we seperate the injury areas and use 0 and 1 to check if the patient have injury on this area. As a result, we are now having three columns of outcomes, we need to figure out a way to convert them into one with some statistical meaningful levels.
 
-
-
-Before cleaning, the dataset we have was 318 observations of 267 variables.
-After cleaning, the dataset we have is 211 observations of 11 variables.
