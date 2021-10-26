@@ -32,9 +32,11 @@ mmc_data[mmc_data==" "] <- NA
 mmc_data$Injury.Mech.category <- rep(NA,length(mmc_data$Injury.Mech))
 
 for (i in 1:length(mmc_data$Injury.Mech)){
-  if (str_detect(mmc_data$Injury.Mech[i],"Motorcycle|Bicycle|MVC")==TRUE){mmc_data$Injury.Mech.category[i]="MVC"}
+  if (str_detect(mmc_data$Injury.Mech[i],"Motorcycle|MVC")==TRUE){mmc_data$Injury.Mech.category[i]="MVC"}
   if (str_detect(mmc_data$Injury.Mech[i],"Fall")==TRUE){mmc_data$Injury.Mech.category[i]="Falls"}
   if (str_detect(mmc_data$Injury.Mech[i],"gun")==TRUE){mmc_data$Injury.Mech.category[i]="Gun"}
-  if (str_detect(mmc_data$Injury.Mech[i],"Other|Assault|Biting|Pedestrian")==TRUE){mmc_data$Injury.Mech.category[i]="Others"}
+  if (str_detect(mmc_data$Injury.Mech[i],"Bicycle")==TRUE){mmc_data$Injury.Mech.category[i]="Bicycle"}
+  if (str_detect(mmc_data$Injury.Mech[i],"Other|Assault|Biting|Pedestrian|unknown")==TRUE){mmc_data$Injury.Mech.category[i]="Others"}
+  if (str_detect(mmc_data$Injury.Mech[i],"Blunt Mechanism")==TRUE){mmc_data$Injury.Mech.category[i]="Other_Blunt"}
 }
 
