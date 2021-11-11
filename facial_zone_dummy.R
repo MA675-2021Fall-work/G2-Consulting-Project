@@ -1,4 +1,6 @@
 source("cleaning_and_code_conversion.R")
+library(magrittr)
+library(stringr)
 
 ## Data cleaning, dummy variables
 
@@ -30,13 +32,16 @@ mmc_data[mmc_data==" "] <- NA
 
 ## Creating Injury.Mech.category for column J
 mmc_data$Injury.Mech.category <- rep(NA,length(mmc_data$Injury.Mech))
-
+mmc_data %<>% mutate(Injury.Mech = str_trim(mmc_data$Injury.Mech))
+mmc_data$Injury.Mech[mmc_data$Injury.Mech==""] <- NA
+mmc_data$Injury.Mech[is.na(mmc_data$Injury.Mech)]=0
 for (i in 1:length(mmc_data$Injury.Mech)){
   if (str_detect(mmc_data$Injury.Mech[i],"Motorcycle|MVC")==TRUE){mmc_data$Injury.Mech.category[i]="MVC"}
   if (str_detect(mmc_data$Injury.Mech[i],"Fall")==TRUE){mmc_data$Injury.Mech.category[i]="Falls"}
   if (str_detect(mmc_data$Injury.Mech[i],"gun")==TRUE){mmc_data$Injury.Mech.category[i]="Gun"}
   if (str_detect(mmc_data$Injury.Mech[i],"Bicycle")==TRUE){mmc_data$Injury.Mech.category[i]="Bicycle"}
-  if (str_detect(mmc_data$Injury.Mech[i],"Other|Assault|Biting|Pedestrian|Unknown|                                                                                                                                                                                                                                                                ")==TRUE){mmc_data$Injury.Mech.category[i]="Others"}
+  if (str_detect(mmc_data$Injury.Mech[i],"Other|Assault|Biting|Pedestrian|Unknown|0")==TRUE){mmc_data$Injury.Mech.category[i]="Others"}
   if (str_detect(mmc_data$Injury.Mech[i],"Blunt Mechanism")==TRUE){mmc_data$Injury.Mech.category[i]="Other_Blunt"}
+  
 }
 
