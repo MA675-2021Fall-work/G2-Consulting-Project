@@ -23,25 +23,78 @@ superior_sub <- subset(cleaned_set, superior == 1)
 midface_sub <- subset(cleaned_set, midface == 1)
 
 
-
 ggplot(midface_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
   geom_bar(stat = "count", position = "dodge")+
   facet_wrap(~Injury.Mech.category)+
-  ggtitle("Midface barchart")
+  ggtitle("Midface area injured patient number vs. demographic information")
+
+ggplot(superior_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)+
+  ggtitle("Superior area injured patient number vs. demographic information")
+
+ggplot(mandible_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)+
+  ggtitle("Mandible area injured patient number vs. demographic information")
+
 
 
 ggplot(cleaned_set,aes(x = Urban.Rural, y= Age, color = Injury.Mech.category))+
   geom_jitter(width = 0.25)+
-  ggtitle("Jitter plot for Injury mech vs. Age")
+  ggtitle("Jitter plot for Injury mech vs. Age at different area")
 
 
-ggplot(cleaned_set, aes(x = Urban.Rural, fill = Urban.Rural))+
+ggplot(cleaned_set)+
+  aes(x = Gender, fill = Injury.Mech.category)+
   geom_bar(stat = "count", position = "dodge")+
-  facet_wrap(~Injury.Mech.category)
-  
+  ggtitle("Distribution for injury mech for different gender")
 
-ggplot(midface_sub)+
-  aes(x = Urban.Rural, y = midface, fill = Injury.Mech.category)+
-  geom_bar(stat = "identity")
+ggplot(cleaned_set)+
+  geom_jitter(aes(x=Gender, y= Urban.Rural, color= Urban.Rural), width = 0.25)+
+  facet_wrap(~Injury.Mech.category)+
+  ggtitle("Gender vs. Residency", subtitle = "Injury Mechanism")
+
+
+
+visual_subset <-cleaned_set %>% 
+  subset(Injury.Mech.category=="MVC" | Injury.Mech.category=="Falls")
+ggplot(visual_subset)+
+  geom_jitter(aes(x=Urban.Rural, y= Age, color=Injury.Mech.category), width=0.25)+
+  ggtitle("Residency vs. Age", subtitle="Falls and MVC cases")
+
+
+ggplot(cleaned_set,aes(x = Age))+
+  geom_bar(stat = "count",position = "dodge")+
+  geom_density(aes(x = Age))
+
+hist(cleaned_set$Age, breaks = 5,col = "lightblue", xlab = "Patient Age", ylab = "Frequency", main = "Histogram for distribution for patients' AGE")
+
+trausite <- cleaned_set[, c(1, 8, 9, 10)]
+trausite<- trausite%>%
+  pivot_longer(!Study.ID.., names_to = "trauma_site", values_to = "level")
+trausite <- filter(trausite, trausite$level==1)
+
+trausite1 <- cleaned_set %>% inner_join(trausite, by="Study.ID..")
+
+ggplot(trausite1)+
+  geom_bar(aes(x=Urban.Rural, fill=Injury.Mech.category), stat="count")+
+  facet_wrap(~trauma_site)+
+  ggtitle("Number of patients with different trauma sites ")
+
   
-  
+ggplot(cleaned_set)+
+  geom_bar(aes(x=Gender,fill=Gender))+
+  coord_polar()+
+  ggtitle("Proportion of Gender")
+
+
+ggplot(cleaned_set)+
+  geom_bar(aes(x=Urban.Rural,fill=Urban.Rural))+
+  coord_polar()+
+  ggtitle("Proportion of Location")
+
+
+ggplot(cleaned_set)+
+  geom_bar(aes(x=Injury.Mech.category,fill=Injury.Mech.category))+
+  ggtitle("Proportion of Injury Mechanism")

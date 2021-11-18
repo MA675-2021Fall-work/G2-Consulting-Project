@@ -12,7 +12,7 @@ mmc_subset_ICD10 <- subset(mmc_subset_ICD10, sum_dummy > 0)
 
 mmc_subset_ICD10 <- mmc_subset_ICD10[, -c(47)]
 
-visualization_subset <- mmc_subset_ICD10[c(9:13)]
+visualization_subset <- mmc_subset_ICD10[c(9:13,47)]
 
 cleaned_set <- mmc_subset_ICD10[c(1:6, 9:13)]
 
@@ -23,10 +23,13 @@ mmc_subset_ICD9_ICD10 <- mmc_data[c(1:9, 264:267, 22:80)]
 
 ## removing rows that do not have a value in ICD.9.diagnosis.code.1 variable
 mmc_subset_ICD9 <- mmc_data[c(1:9, 264:267, 22:47)]
+mmc_subset_ICD9$sum_dummy <- mmc_subset_ICD9$mandible + mmc_subset_ICD9$superior + mmc_subset_ICD9$midface
+mmc_subset_nonc_ICD9 <- subset(mmc_subset_ICD9, sum_dummy == 0)
+
 mmc_subset_ICD9 <- mmc_subset_ICD9[complete.cases(mmc_subset_ICD9_ICD10$ICD9.diagnosis.codes.1),]
 
 ## Creating test data frame to observe mechanisms vs category
 categories <- mmc_data[c(10, 8, 267)]
 
-
+write.csv(mmc_subset_nonc_ICD9, "/Users/xuchen/Desktop \\ nonconvertible ICD9 codes.csv", row.names = FALSE)
 
