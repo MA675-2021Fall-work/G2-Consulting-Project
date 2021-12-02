@@ -3,6 +3,9 @@ source("facial_zone_dummy.R")
 source("data_cleaning_subsetting.R")
 
 library(rstanarm)
+
+options(mc.cores = parallel::detectCores())
+
 cleaned_set$Age <- as.numeric(cleaned_set$Age)
 cleaned_set$Gender <- as.factor(cleaned_set$Gender)
 cleaned_set$Urban.Rural <- as.factor(cleaned_set$Urban.Rural)
@@ -21,6 +24,7 @@ round(summary(fit_midface), digits = 2)
 mandible_sub <- subset(cleaned_set, mandible == 1)
 superior_sub <- subset(cleaned_set, superior == 1)
 midface_sub <- subset(cleaned_set, midface == 1)
+otherff_sub <- subset(cleaned_set, otherff == 1)
 
 
 ggplot(midface_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
@@ -70,7 +74,7 @@ ggplot(cleaned_set,aes(x = Age))+
 
 hist(cleaned_set$Age, breaks = 5,col = "lightblue", xlab = "Patient Age", ylab = "Frequency", main = "Histogram for distribution for patients' AGE")
 
-trausite <- cleaned_set[, c(1, 8, 9, 10)]
+trausite <- cleaned_set[, c(1, 8, 9, 10,11)]
 trausite<- trausite%>%
   pivot_longer(!Study.ID.., names_to = "trauma_site", values_to = "level")
 trausite <- filter(trausite, trausite$level==1)
