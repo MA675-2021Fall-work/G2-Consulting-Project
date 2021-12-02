@@ -18,6 +18,7 @@ cleaned_set <- mmc_subset_ICD10[c(1:6, 9:14)]
 
 cleaned_set$Injury.Mech.category[is.na(cleaned_set$Injury.Mech.category)] <- "Others"
 
+
 # ____________________
 
 ## creating another subset which includes both the ICD9 and ICD10 code columns
