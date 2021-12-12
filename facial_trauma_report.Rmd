@@ -1,0 +1,166 @@
+---
+title: "Facial Trauma Report"
+author: "MSSP Consulting G2"
+date: "12/12/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning= FALSE, echo=FALSE, message=FALSE)
+pacman::p_load(
+  "ggplot2",
+  "knitr",
+  "arm",
+  "rstanarm",
+  "foreign",
+  "bayesplot",
+  "glmx",
+  "reshape2",
+  "VGAM",
+  "dplyr",
+  "magrittr",
+  "tidyverse",
+  "wakefield", "MatchIt", "tableone", "ggcorrplot", "gridExtra"
+)
+source("cleaning_and_code_conversion.R")
+source("facial_zone_dummy.R")
+source("data_cleaning_subsetting.R")
+# source("visualization.R")
+```
+
+## Abstract
+
+## Introduction
+
+## Data Cleaning and Processing
+
+## EDA
+```{r eval=FALSE}
+options(mc.cores = parallel::detectCores())
+
+cleaned_set$Age <- as.numeric(cleaned_set$Age)
+cleaned_set$Gender <- as.factor(cleaned_set$Gender)
+cleaned_set$Urban.Rural <- as.factor(cleaned_set$Urban.Rural)
+cleaned_set$Injury.Mech.category <- as.factor(cleaned_set$Injury.Mech.category)
+
+mandible_sub <- subset(cleaned_set, mandible == 1)
+superior_sub <- subset(cleaned_set, superior == 1)
+midface_sub <- subset(cleaned_set, midface == 1)
+otherff_sub <- subset(cleaned_set, otherff == 1)
+```
+
+```{r fig.align='center', fig.cap="Midface area injured patient number vs. demographic information"}
+ggplot(midface_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+```
+
+```{r fig.align='center', fig.cap= "Superior area injured patient number vs. demographic information"}
+ggplot(superior_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+```
+
+```{r fig.align='center', fig.cap="Mandible area injured patient number vs. demographic information"}
+ggplot(mandible_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+
+```
+```{r fig.align='center', fig.cap= "Other facial trauma  sites injured patient number vs. demographic information"}
+ggplot(otherff_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+```
+
+```{r fig.align='center', fig.cap="Distribution for injury mech for different gender"}
+ggplot(cleaned_set)+
+  aes(x = Gender, fill = Injury.Mech.category)+
+  geom_bar(stat = "count", position = "dodge")
+
+```
+
+
+## Model Fitting
+
+```{r}
+
+ml_mandible <- stan_glmer(mandible ~ as.numeric(Age) + Gender  + Injury.Mech.category + 
+                            (1+Urban.Rural|Injury.Mech.category), data = cleaned_set, family = binomial(link="logit"), refresh=0)
+#summary(ml_mandible)
+p1<- plot(ml_mandible)+ggtitle("mandible")
+q1 <-pp_check(ml_mandible)+ggtitle("mandible")
+
+
+kable(fixef(ml_mandible), "pipe", caption ="Fixed effects of Mandible")
+
+```
+
+```{r}
+ml_superior <- stan_glmer(superior ~as.numeric(Age) + Gender  + +Injury.Mech.category + 
+                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+                          family=binomial(link = "logit"), refresh=0)
+# summary(ml_superior)
+p2<-plot(ml_superior) +ggtitle("superior")
+q2<- pp_check(ml_superior) +ggtitle("superior")
+
+kable(fixef(ml_superior), "pipe", caption="Fixed effects of superior")
+
+```
+
+```{r}
+ml_midface <- stan_glmer(midface ~as.numeric(Age) + Gender + Injury.Mech.category + 
+                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+                          family=binomial(link="logit"), refresh=0)
+# summary(ml_midface)
+p3<- plot(ml_midface)+ggtitle("midface")
+q3 <- pp_check(ml_midface) +ggtitle("midface")
+
+kable(fixed(ml_midface), "pipe", caption = "Fixed effects of midface")
+
+
+```
+
+```{r}
+ml_other <- stan_glmer(otherff ~as.numeric(Age) + Gender  + Injury.Mech.category + 
+                           (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+                         family=binomial(link="logit"), refresh=0)
+#summary(ml_other) 
+p4<-plot(ml_other)+ggtitle("other")
+q4 <- pp_check(ml_other)+ggtitle("other")
+
+kable(fixed(ml_other), "pipe", caption = "Fixed Effects of other")
+
+```
+
+```{r fig.align='center', fig.cap="Plots of model fitting for four trauma sites"}
+
+grid.arrange(p1,p2,p3,p4, ncol=2)
+
+```
+
+```{r fig.align='center', fig.cap="Posterior Predictive Checks Plots for Four Trauma Sites"}
+grid.arrange(q1,q2,q3,q4,ncol=2)
+
+```
+
+```{r fig.align='center', fig.cap="Binned Residual Plots for Model Fitting"}
+par(mfrow= c(2,2))
+r1<- binnedplot(fitted(ml_mandible), resid(ml_mandible, type = "response"),main="Binned residual plot for mandible")
+r2 <- binnedplot(fitted(ml_superior), resid(ml_superior, type = "response"),main="Binned residual plot for superior")
+r3<- binnedplot(fitted(ml_midface), resid(ml_midface, type = "response"), main="Binned residual plot for midface")
+r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binned residual plot for other")
+
+```
+## Result 
+
+
+## Discussion
+
+## Future Steps
+
+## References

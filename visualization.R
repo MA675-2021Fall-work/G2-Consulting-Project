@@ -12,14 +12,20 @@ cleaned_set$Urban.Rural <- as.factor(cleaned_set$Urban.Rural)
 cleaned_set$Injury.Mech.category <- as.factor(cleaned_set$Injury.Mech.category)
 
 ##fit model for mandible
-fit_mandible <- stan_glm(formula = mandible ~ Age + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
-round(summary(fit_mandible), digits = 2)
-
-fit_superior <- stan_glm(formula = superior ~ Age + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
-round(summary(fit_superior), digits = 2)
-
-fit_midface <- stan_glm(formula = midface ~ Age + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
-round(summary(fit_midface), digits = 2)
+# fit_mandible <- stan_glm(formula = mandible ~ Age + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
+# round(summary(fit_mandible), digits = 2)
+# plot(fit_mandible)
+# pp_check(fit_mandible)
+# 
+# fit_superior <- stan_glm(formula = superior ~ Age + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
+# round(summary(fit_superior), digits = 2)
+# plot(fit_superior)
+# pp_check(fit_superior)
+# 
+# fit_midface <- stan_glm(formula = midface ~ Age + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
+# round(summary(fit_midface), digits = 2)
+# plot(fit_midface)
+# pp_check(fit_midface)
 
 mandible_sub <- subset(cleaned_set, mandible == 1)
 superior_sub <- subset(cleaned_set, superior == 1)
@@ -42,7 +48,10 @@ ggplot(mandible_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
   facet_wrap(~Injury.Mech.category)+
   ggtitle("Mandible area injured patient number vs. demographic information")
 
-
+ggplot(otherff_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)+
+  ggtitle("Other facial trauma  sites injured patient number vs. demographic information")
 
 ggplot(cleaned_set,aes(x = Urban.Rural, y= Age, color = Injury.Mech.category))+
   geom_jitter(width = 0.25)+
@@ -72,7 +81,7 @@ ggplot(cleaned_set,aes(x = Age))+
   geom_bar(stat = "count",position = "dodge")+
   geom_density(aes(x = Age))
 
-hist(cleaned_set$Age, breaks = 5,col = "lightblue", xlab = "Patient Age", ylab = "Frequency", main = "Histogram for distribution for patients' AGE")
+#hist(cleaned_set$Age, breaks = 5,col = "lightblue", xlab = "Patient Age", ylab = "Frequency", main = "Histogram for distribution for patients' AGE")
 
 trausite <- cleaned_set[, c(1, 8, 9, 10,11)]
 trausite<- trausite%>%
@@ -102,3 +111,4 @@ ggplot(cleaned_set)+
 ggplot(cleaned_set)+
   geom_bar(aes(x=Injury.Mech.category,fill=Injury.Mech.category))+
   ggtitle("Proportion of Injury Mechanism")
+

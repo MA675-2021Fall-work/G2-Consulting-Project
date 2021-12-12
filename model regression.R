@@ -19,41 +19,50 @@ pacman::p_load(
 
 # mandible 
 ml_mandible <- stan_glmer(mandible ~ as.numeric(Age) + Gender  + Injury.Mech.category + 
-                            (1+Urban.Rural|Injury.Mech.category), df, family = binomial, refresh=0)
-summary(mandible)
-plot(ml_mandible)
-pp_check(ml_mandible)
+                            (1+Urban.Rural|Injury.Mech.category), data = cleaned_set, family = binomial(link="logit"), refresh=0)
+summary(ml_mandible)
+p1<- plot(ml_mandible)+ggtitle("mandible")
+q1 <-pp_check(ml_mandible)+ggtitle("mandible")
+r1<- binnedplot(fitted(ml_mandible), resid(ml_mandible, type = "response"),main="Binned residual plot for mandible")
 
-
+kable(fixef(ml_mandible), "pipe")
 # superior
-ml_superior <- stan_glmer(superior ~as.numeric(Age) + Gender  + Injury.Mech.category + 
+ml_superior <- stan_glmer(superior ~as.numeric(Age) + Gender  + +Injury.Mech.category + 
                             (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
-                          family=binomial, refresh=0)
+                          family=binomial(link = "logit"), refresh=0)
 summary(ml_superior)
-plot(ml_superior)
-pp_check(ml_superior)
+p2<-plot(ml_superior) +ggtitle("superior")
+q2<- pp_check(ml_superior) +ggtitle("superior")
+r2 <- binnedplot(fitted(ml_superior), resid(ml_superior, type = "response"),main="Binned residual plot for superior")
 
+kable(fixef(ml_superior), "pipe")
 # midface
-ml_midface <- stan_glmer(midface ~as.numeric(Age) + Gender  + Injury.Mech.category + 
+ml_midface <- stan_glmer(midface ~as.numeric(Age) + Gender + Injury.Mech.category + 
                             (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
-                          family=binomial, refresh=0)
+                          family=binomial(link="logit"), refresh=0)
 summary(ml_midface)
-plot(ml_midface)
-pp_check(ml_midface)
+p3<- plot(ml_midface)+ggtitle("midface")
+q3 <- pp_check(ml_midface) +ggtitle("midface")
+r3<- binnedplot(fitted(ml_midface), resid(ml_midface, type = "response"), main="Binned residual plot for midface")
 
+kable(fixed(ml_midface))
 # otherff
 ml_other <- stan_glmer(otherff ~as.numeric(Age) + Gender  + Injury.Mech.category + 
                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
-                         family=binomial, refresh=0)
-summary(ml_other)
-plot(ml_other)
-pp_check(ml_other)
+                         family=binomial(link="logit"), refresh=0)
+summary(ml_other) 
+p4<-plot(ml_other)+ggtitle("other")
+q4 <- pp_check(ml_other)+ggtitle("other")
+
+r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binned residual plot for other")
+
+kable(fixed(ml_other), "pipe")
+grid.arrange(p1,p2,p3,p4, ncol=2)
+
+grid.arrange(q1,q2,q3,q4,ncol=2)
 
 
-
-
-
-
+library(gridExtra)
 
 
 ## test models below
@@ -66,8 +75,8 @@ plot(fit_lm)
 ## regression
 fit_midface <- stan_glm(midface ~ as.numeric(Age) + Gender + Urban.Rural + Injury.Mech.category,  family = binomial(link = "logit"), data = cleaned_set, refresh = 0)
 round(coef(fit_mandible), digits = 5)
-plot(fit_mandible)
-pp_check(fit_mandible)
+plot(fit_midface)
+pp_check(fit_midface)
 # zero inflation
 
 ## validation
