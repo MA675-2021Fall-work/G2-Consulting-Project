@@ -18,6 +18,8 @@ cleaned_set <- mmc_subset_ICD10[c(1:6, 9:14)]
 
 cleaned_set$Injury.Mech.category[is.na(cleaned_set$Injury.Mech.category)] <- "Others"
 
+write.csv(cleaned_set, "cleaned_set.csv", row.names = F)
+
 
 # ____________________
 
