@@ -34,14 +34,14 @@ cleaned_set <- read.csv("cleaned_set.csv")
 ```
 
 
-## Abstract
+## Abstract:
 
 
-## Introduction
+## Introduction:
 
 Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model which is best-fit for binary outcomes.
 
-## Data Cleaning and Processing
+## Data Cleaning and Processing:
 
 For ICD codes: The major differences between the two coding systems include the number of characters involved. ICD-9 has up to five characters while ICD-10 has up to seven. ICD-10 adds laterality to the coding system, which ICD-9 lacks. ICD-10 offers much more specificity, including episodes of care, body area, etc. Also, the ICD-10 coding structure utilizes a dummy placeholder, which ICD-9 does not. Because the clients plan to analyze the injury area differences in facial trauma patients in urban and rural settings. Transformation of ICD codes is very important.
 
@@ -61,7 +61,7 @@ To solve problem A. For the tidy dataset so far, we now have 211 patients with c
 | Bicycle                               |Bicycle                               |
 |Other_Blunt                            |Blunt Mechanism              |
 
-Data Description:
+## Data Description:
 
 
 | Variable                                  | Explanation                              | Description |
@@ -80,7 +80,8 @@ Data Description:
 In order to show the information of the data set and the relationship between various variables more intuitively, let's move to our EDA part:
 
 
-## EDA
+## EDA:
+
 After data cleaning and processing, we started our exploratory data analysis. As shown in Figure 1, 2, 3, and 4, there are more data samples collected from midface injury patients than the other three facial trauma sites. Among all four facial trauma sites, falls and motor vehicle accidents are the two major types of injury mechanisms for both residency areas. It is hard not to notice that people in rural areas have more facial trauma caused by MVCs than people with facial trauma in urban areas. In addition, we have a small sample size for the injury mechanism of “Gun”  which makes sense because gunshot accidents are rare in our daily life and gunshot accidents can cause immediate death that do not even have a chance to be admitted into hospital for treatment and gunshots are majorly targets on midface and superior. 
 
 Figure 5 is a bar plot which compares the different population sizes of people with  facial trauma and bars are filled with color coded facial injury mechanism categories. From the bar plot, we can see that the database consists of more male patients than female patients. Falls and motor vehicle accidents are the two major types of injury mechanisms for both  female and male patients. 
@@ -136,7 +137,7 @@ ggplot(cleaned_set)+
 ```
 
 
-## Model Fitting
+## Model Fitting:
 
 Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regression Model to estimate the mixed effects of getting facial trauma in one of four trauma sites using “Age” and “Gender” as the predictors, add “Urban.Rural” for the random slope effect, and use “Injury.Mech.catergory” as the random intercept. The function of the model is shown below:
 
@@ -217,10 +218,20 @@ r3<- binnedplot(fitted(ml_midface), resid(ml_midface, type = "response"), main="
 r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binned residual plot for other")
 
 ```
-## Result 
+## Result:
+
+From the model fitting, we can do some preliminary inferences as below:
+
+Firstly, a patient's age has no influence on facial trauma sites, which means, people with different ages have the same possibility of getting hurt on different facial trauma sites.
+
+Secondly, for patients with the same injury mechanism and from the same residency, men have 16% more possibility to get hurt at superior and 10% at other facial sites compared with women. Similarly, women are easier to get hurt at mandible and midface, the differences are 12.5% and 7.5%.
+
+Thirdly, injury mechanisms also show their impacts on facial trauma sites. For patients with the same gender and from the same residency, they are 17% more likely to get hurt at superior face if they are hurt by a gun. For patients hurt by falls, they are 37% less likely to get hurt at midface and 12% at other types of facial trauma sites. For patients hurt because of motorcycles and other blunts, they have 15% and 21% less possibility to get hurt at superior sites, and show slightly less possibility at mandible and midface. For patients with other injury mechanisms in our sample, they show 33% and 30% less possibility of getting hurt at superior and midface.
+
+Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients have approximately 7%  more likely to get hurt at mandible face, and 5% or so less likely at superior face.
 
 
-## Discussion
+## Discussion:
 
 ## Phenomena and future Steps:
 
