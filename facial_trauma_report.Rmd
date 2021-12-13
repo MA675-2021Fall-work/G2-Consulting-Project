@@ -141,9 +141,12 @@ ggplot(cleaned_set)+
 
 Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regression Model to estimate the mixed effects of getting facial trauma in one of four trauma sites using “Age” and “Gender” as the predictors, add “Urban.Rural” for the random slope effect, and use “Injury.Mech.catergory” as the random intercept. The function of the model is shown below:
 
-stan_glmer(“Trauma site” ~ as.numeric(Age) + Gender  + Injury.Mech.category +
-(1+Urban.Rural|Injury.Mech.category), data = cleaned_set, 
-family = binomial(link="logit"), refresh=0)
+$$
+\begin{aligned}
+stanglmer(“Trauma site” ~ as.numeric(Age) + Gender  + Injury.Mech.category \\ +
+(1+Urban.Rural|Injury.Mech.category), family = binomial(link="logit"))
+\end{aligned}
+$$
 
 By arranging all four fitted models into one plot, we can see the same model generates different results in different trauma sites. The mixed-effects have greater impacts on superior and midface trauma sites. One reason that can cause this discrepancy is that midface and superior have bigger sample sizes than mandible and other. More information can be found in the four fixed effect table of the models. We also need validation to further assess the effectiveness of this model.
 
@@ -154,9 +157,8 @@ Generalized Linear Mixed-Effects Regression Models are validated by posterior pr
 ml_mandible <- stan_glmer(mandible ~ as.numeric(Age) + Gender  + Injury.Mech.category + 
                             (1+Urban.Rural|Injury.Mech.category), data = cleaned_set, family = binomial(link="logit"), refresh=0)
 #summary(ml_mandible)
-p1<- plot(ml_mandible)+ggtitle("mandible")
+p1<- plot(ml_mandible, probs = 95)+ggtitle("mandible")
 q1 <-pp_check(ml_mandible)+ggtitle("mandible")
-
 
 kable(fixef(ml_mandible), "pipe", caption ="Fixed effects of Mandible")
 
