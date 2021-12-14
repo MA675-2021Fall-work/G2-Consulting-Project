@@ -36,7 +36,7 @@ cleaned_set <- read.csv("cleaned_set.csv")
 
 ## Abstract:
 
-This study is a retrospective review of trauma patients with craniofacial injuries data from 2015-2020 done in partnership with Maine Medical Center (MMC). The purpose of this report is to provide supplementary data analysis to this study with the main goal of analyzing the relationships between areas of facial trauma and numerous predictors, such as residency and mechanism of injury. In this analysis, we will apply the Generalized Linear Mixed-Effect Regression Model, which is best-fit for binary outcomes.
+This study is a retrospective review of trauma patients with craniofacial injuries data from 2016-2020 done in partnership with Maine Medical Center (MMC). The purpose of this report is to provide supplementary data analysis to this study with the main goal of analyzing the relationships between areas of facial trauma and numerous predictors, such as residency and mechanism of injury. In this analysis, we will apply the Generalized Linear Mixed-Effect Regression Model, which is best-fit for binary outcomes.
 
 
 ## Introduction:
