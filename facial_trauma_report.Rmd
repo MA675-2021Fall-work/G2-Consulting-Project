@@ -159,7 +159,7 @@ Generalized Linear Mixed-Effects Regression Models are validated by posterior pr
 ml_mandible <- stan_glmer(mandible ~ as.numeric(Age) + Gender  + Injury.Mech.category + 
                             (1+Urban.Rural|Injury.Mech.category), data = cleaned_set, family = binomial(link="logit"), refresh=0)
 #summary(ml_mandible)
-p1<- plot(ml_mandible, probs = 95)+ggtitle("mandible")
+p1<- plot(ml_mandible)+ggtitle("mandible")
 q1 <-pp_check(ml_mandible)+ggtitle("mandible")
 
 kable(fixef(ml_mandible), "pipe", caption ="Fixed effects of Mandible")
@@ -245,7 +245,7 @@ Firstly, the data we used was collected from one hospital in one state. We under
 
 Secondly, after we cleaned the data set we got, we found that there were only 3-4 factors we can use for building models for checking the relationship between patients' living areal information and the facial trauma sites they got hurt. And we also noticed the information about the patient’s place of residence. Our customer divides it into urban and rural areas. We understand that in this way, we can more efficiently derive the relationships that our customers want. But this will also limit our model construction and overly generalize the patient's residence information. Because the diversity of residence will also have a certain impact on the injured area of the patient's face. If our clients want to allow the hospital to formulate more accurate treatment methods for patients with facial trauma from different living areas, we suggest that we can add some residential information. 
 
-Last but not least, we also found some imbalances in the amount of data caused by objective factors. For example, the number of patients with injuries to the middle face and upper forehead is much more than in the other two weeks. And because of the regional characteristics of Maine, the number of patients injured by guns and bicycles is far less than the number of patients caused by other reasons. These are imbalances that are hard to avoid. The positive aspect is that the imbalance of these data volumes can reflect local characteristics, and the negative aspect is that it will cause some obstacles to model selection. Our suggestion is that, if possible, we hope that more state data can be collected in the future to make our research results more convincing. Because of the limited time, we did not try more statistical models, but based on the current data situation. Knowledge of machine learning should be helpful.
+Last but not least, we also found some imbalances in the amount of data caused by objective factors. For example, the number of patients with injuries to the middle face and upper forehead is much more than in the other two weeks. And because of the regional characteristics of Maine, the number of patients injured by guns and bicycles is far less than the number of patients caused by other reasons. These are imbalances that are hard to avoid. The positive aspect is that the imbalance of these data volumes can reflect local characteristics, and the negative aspect is that it will cause some obstacles to model selection. Our suggestion is that, if possible, we hope that more local information can be collected in the future that can contribute more factores in order to make our research results more convincing. Because of the limited time, we did not try more statistical models, but based on the current data situation. Knowledge of machine learning should be helpful.
 
 
 ## References:
