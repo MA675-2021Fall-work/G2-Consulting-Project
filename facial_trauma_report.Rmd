@@ -270,6 +270,14 @@ kable(df1, "pipe", caption = "Prediction of probability of getting hurt on facia
 
 ## Discussion:
 
+Logistic Mixed-Effects Regression Models
+
+When using this model, we can use the confidence interval to evaluate the statistical significance of variable effects. Age has a non-significant effect on four facial trauma sites, but gender has statistical significant effect on all facial trauma sites at a significant level of 0.5. For injury mechanisms, on one shows significant effect on mandible face, but for superior face, all injury mechanisms are significant except falls. And for midface, falls, gun, others are have significant effect, but for other facial taruma sites, only gun shows significant negative effect.
+Here we set significant level at 0.5 because our data will not show any statistically significant effect if we use higher confidence level. In this case, one might explore this further by using larger sample. Repeating the study with a larger sample would certainly not guarantee a statistically significant result, but it would provide a more precise estimate. 
+
+To interpret the random effect, as we mentioned above, each injury mechanism has its own intercept and slope, which means, there exists difference within each sample group of different injury mechanisms. From the plot above, we can see the coefficient of random effects are not significantly different from 0, which means, the multilevel model’s shrink effect is not so well, so in the future, we can try logistic regression without random effect and add some interactions terms.
+
+
 ## Phenomena and future Steps:
 
 Firstly, the data we used was collected from one hospital in one state. We understand that this data collection approach will allow hospitals to tailor treatments for facial injury patients from different residential areas to local characteristics in Maine. However, if our client wants to extend this method of improving diagnostic efficiency to the entire East Coast and even the entire United States, we suggest that we can select representative hospitals in each state to collect data and conduct more overall data analysis and modeling. 
