@@ -1,7 +1,7 @@
 ---
-title: "Facial Trauma Final Report"
-author: "MSSP Consulting Group 2"
-date: "December 12 2021"
+title: "Facial Trauma Analysis Final Report"
+author: "Andrew Sisitzky, Daniel(Chen) Xu, Mi Zhang, Shuting Li"
+date: "December 14 2021"
 output: pdf_document
 ---
 
