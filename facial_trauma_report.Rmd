@@ -36,10 +36,12 @@ cleaned_set <- read.csv("cleaned_set.csv")
 
 ## Abstract:
 
+This study is a retrospective review of trauma patients with craniofacial injuries data from 2015-2020 done in partnership with Maine Medical Center (MMC). The purpose of this report is to provide supplementary data analysis to this study with the main goal of analyzing the relationships between areas of facial trauma and numerous predictors, such as residency and mechanism of injury. In this analysis, we will apply the Generalized Linear Mixed-Effect Regression Model, which is best-fit for binary outcomes.
+
 
 ## Introduction:
 
-Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model which is best-fit for binary outcomes.
+Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites.
 
 ## Data Cleaning and Processing:
 
@@ -220,17 +222,19 @@ r3<- binnedplot(fitted(ml_midface), resid(ml_midface, type = "response"), main="
 r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binned residual plot for other")
 
 ```
+
+
 ## Result:
 
 From the model fitting, we can do some preliminary inferences as below:
 
 Firstly, a patient's age has no influence on facial trauma sites, which means, people with different ages have the same possibility of getting hurt on different facial trauma sites.
 
-Secondly, for patients with the same injury mechanism and from the same residency, men have 16% more possibility to get hurt at superior and 10% at other facial sites compared with women. Similarly, women are easier to get hurt at mandible and midface, the differences are 12.5% and 7.5%.
+Secondly, for patients with the same injury mechanism and from the same residency, men have 16% more possibility to get hurt at superior and 10% at other facial sites compared with women. Similarly, women are more likely to get hurt at mandible and midface, the differences are 12.5% and 7.5%.
 
 Thirdly, injury mechanisms also show their impacts on facial trauma sites. For patients with the same gender and from the same residency, they are 17% more likely to get hurt at superior face if they are hurt by a gun. For patients hurt by falls, they are 37% less likely to get hurt at midface and 12% at other types of facial trauma sites. For patients hurt because of motorcycles and other blunts, they have 15% and 21% less possibility to get hurt at superior sites, and show slightly less possibility at mandible and midface. For patients with other injury mechanisms in our sample, they show 33% and 30% less possibility of getting hurt at superior and midface.
 
-Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients have approximately 7%  more likely to get hurt at mandible face, and 5% or so less likely at superior face.
+Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients are approximately 7%  more likely to get hurt at mandible face, and 5% or so less likely at superior face.
 
 
 ## Discussion:
