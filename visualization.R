@@ -81,7 +81,7 @@ ggplot(cleaned_set,aes(x = Age))+
   geom_bar(stat = "count",position = "dodge")+
   geom_density(aes(x = Age))
 
-#hist(cleaned_set$Age, breaks = 5,col = "lightblue", xlab = "Patient Age", ylab = "Frequency", main = "Histogram for distribution for patients' AGE")
+hist(cleaned_set$Age, breaks = 5,col = "lightblue", xlab = "Patient Age", ylab = "Frequency", main = "Histogram for distribution for patients' AGE")
 
 trausite <- cleaned_set[, c(1, 8, 9, 10,11)]
 trausite<- trausite%>%
@@ -111,4 +111,12 @@ ggplot(cleaned_set)+
 ggplot(cleaned_set)+
   geom_bar(aes(x=Injury.Mech.category,fill=Injury.Mech.category))+
   ggtitle("Proportion of Injury Mechanism")
+
+
+
+
+
+
+
+
 
