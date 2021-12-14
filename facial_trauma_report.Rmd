@@ -149,7 +149,7 @@ Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regr
 
 $$
 \begin{aligned}
-stan-glmer("Trauma site" Urban.Rural + Gender  + Injury.Mech.category \\ +
+stan\_glmer("Trauma site" \sim Urban.Rural + Gender  + Injury.Mech.category \\ +
 (1+Urban.Rural|Injury.Mech.category), family = binomial(link="logit"))
 \end{aligned}
 $$
@@ -232,13 +232,14 @@ r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binn
 
 From the model fitting, we can do some preliminary inferences as below:
 
-Firstly, a patient's age has no influence on facial trauma sites, which means, people with different ages have the same possibility of getting hurt on different facial trauma sites.
+Firstly, a patient's age has no influence on facial trauma sites, which means, people with different ages have the same possibility of getting hurt on different facial trauma sites. So we remove it from our model.
 
-Secondly, for patients with the same injury mechanism and from the same residency, men have 16% more possibility to get hurt at superior and 10% at other facial sites compared with women. Similarly, women are more likely to get hurt at mandible and midface, the differences are 12.5% and 7.5%.
+Secondly, for patients with the same injury mechanism and from the same residency, men have 16% more possibility to get hurt at superior and 10% at other facial sites compared with women. Similarly, women are more likely to get hurt at mandible and midface, the effect levels are 11% and 10%.
 
-Thirdly, injury mechanisms also show their impacts on facial trauma sites. For patients with the same gender and from the same residency, they are 17% more likely to get hurt at superior face if they are hurt by a gun. For patients hurt by falls, they are 37% less likely to get hurt at midface and 12% at other types of facial trauma sites. For patients hurt because of motorcycles and other blunts, they have 15% and 21% less possibility to get hurt at superior sites, and show slightly less possibility at mandible and midface. For patients with other injury mechanisms in our sample, they show 33% and 30% less possibility of getting hurt at superior and midface.
+Thirdly, injury mechanisms also show their impacts on facial trauma sites. For patients with the same gender and from the same residency, they are 29% less likely to get hurt at other facial trauma site if they are hurt by a gun. For patients hurt by falls, they are 22% less likely to get hurt at midface. For patients hurt because of motorcycles, there are no significant effect on the facial trauma site.For patients with other blunt and other injury mechanisms in our sample, they show 19% and 31% less possibility of getting hurt at superior face. What's more, other injury type also shows -27% effect on midface.
 
-Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients are approximately 7%  more likely to get hurt at mandible face, and 5% or so less likely at superior face.
+Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients are approximately 7% more likely to get hurt at mandible face, and 5% or so less likely at superior face. For patients hurt by falls/ MVC/ bicycle/ Gun/ other/ other blunt, urban patients have approximately 3%/ 5%/ 7%/ 12%/ 13%/ 16% less possibility get hurt at other trauma site than patients with same injury type from rural. For midface trauma site, patients’ residency shows no significant difference.
+
 
 
 ## Discussion:
