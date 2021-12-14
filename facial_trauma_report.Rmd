@@ -192,7 +192,6 @@ q3 <- pp_check(ml_midface) +ggtitle("midface")
 
 kable(fixef(ml_midface), "pipe", caption = "Fixed effects of midface")
 
-
 ```
 
 ```{r}
@@ -230,6 +229,8 @@ r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binn
 
 ## Result:
 
+### Comparison:
+
 From the estimates of model fitting, we can use 1/4 beta principle to do some preliminary inferences as below, all percentages are multiple effects:
 
 Firstly, a patient's age has no influence on facial trauma sites, which means, we donot have enough evidence to believe people with different ages have different possibilities to getting hurt on different facial trauma sites. So we remove it from our model.
@@ -241,8 +242,41 @@ Thirdly, injury mechanisms also show their impacts on facial trauma sites. For p
 Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients are approximately 7% more likely to get hurt at mandible face, and 5% or so less likely at superior face. For patients hurt by falls/ MVC/ bicycle/ Gun/ other/ other blunt, urban patients have approximately 3%/ 5%/ 7%/ 12%/ 13%/ 16% less possibility get hurt at other trauma site than patients with same injury type from rural. Because injury mechanisms will influence the effect level of residency, so this is why we choose residency as our random slope. For midface trauma site, patients’ residency shows no significant difference.
 
 
+### Prediction:
+
+Based on our model, we did posterior prediction about each factors, the output shows below:
+
+```{r,include=FALSE}
+pred_mandible <- apply(posterior_predict(ml_mandible,data=cleaned_set),2,sum)
+pred_superior <- apply(posterior_predict(ml_superior,data=cleaned_set),2,sum)
+pred_midface <- apply(posterior_predict(ml_midface,data=cleaned_set),2,sum)
+pred_other <- apply(posterior_predict(ml_other,data=cleaned_set),2,sum)
+
+df <- as.data.frame(cleaned_set[,c(5,7,12)])
+df$mandible <- pred_mandible/4000
+df$superior <- pred_superior/4000
+df$midface <- pred_midface/4000
+df$other <- pred_other/4000
+colnames(df)
+df1 <- df %>% 
+  group_by(Gender,Urban.Rural,Injury.Mech.category) %>% 
+  summarise(mandible=mean(mandible),superior=mean(superior),midface=mean(midface),other=mean(other))
+```
+
+```{r,echo=FALSE}
+kable(df1, "pipe", caption = "Prediction of probability of getting hurt on facial sites")
+```
+
 
 ## Discussion:
+
+Logistic Mixed-Effects Regression Models
+
+When using this model, we can use the confidence interval to evaluate the statistical significance of variable effects. Age has a non-significant effect on four facial trauma sites, but gender has statistical significant effect on all facial trauma sites at a significant level of 0.5. For injury mechanisms, on one shows significant effect on mandible face, but for superior face, all injury mechanisms are significant except falls. And for midface, falls, gun, others are have significant effect, but for other facial taruma sites, only gun shows significant negative effect.
+Here we set significant level at 0.5 because our data will not show any statistically significant effect if we use higher confidence level. In this case, one might explore this further by using larger sample. Repeating the study with a larger sample would certainly not guarantee a statistically significant result, but it would provide a more precise estimate. 
+
+To interpret the random effect, as we mentioned above, each injury mechanism has its own intercept and slope, which means, there exists difference within each sample group of different injury mechanisms. From the plot above, we can see the coefficient of random effects are not significantly different from 0, which means, the multilevel model’s shrink effect is not so well, so in the future, we can try logistic regression without random effect and add some interactions terms. 
+
 
 ## Phenomena and future Steps:
 
