@@ -41,11 +41,7 @@ This study is a retrospective review of trauma patients with craniofacial injuri
 
 ## Introduction:
 
-<<<<<<< HEAD
-Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model which is best-fit for binary outcomes and it allows us to add random slope and intercept effects which will also improve model fitting efficiency. 
-=======
-Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites.
->>>>>>> 3cccc2824143e1a72846de5283acab1a80754812
+Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model which is best-fit for binary outcomes, non-Gaussian distribution variable predictors, and it allows us to add random slope and intercept effects which will also improve model fitting efficiency. 
 
 ## Data Cleaning and Processing:
 
@@ -149,12 +145,12 @@ Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regr
 
 $$
 \begin{aligned}
-stan-glmer("Trauma site" Urban.Rural + Gender  + Injury.Mech.category \\ +
+stan\_glmer("Trauma site"  Urban.Rural + Gender  + Injury.Mech.category \\ +
 (1+Urban.Rural|Injury.Mech.category), family = binomial(link="logit"))
 \end{aligned}
 $$
 
-By arranging all four fitted models into one plot, we can see the same model generates different results in different trauma sites. For mandible facial trauma site, we can see that "Urban.Rural" and "Injury.Mech.category Others" have positive effect on it. For the superior facial trauma site, "Gender Male" and "Injury.Mech.category Gun" have greater positive effect on it. For midface, only the intercept show a positive result. For other facial trauma site, only "Gender Male" shows positive effect. One reason that can cause this discrepancy is all four trauma sites have very different sample sizes and bigger sample size can help improving the model fitting effect. More information can be found in the four fixed effect table of the models. We also need validation to further assess the effectiveness of this model.
+By arranging all four fitted models into one plot, we can see the same model generates different results in different trauma sites. For mandible facial trauma site, we can see that "Urban.Rural" and "Injury.Mech.category Others" have positive effect on it. For the superior facial trauma site, "Gender Male" and "Injury.Mech.category Gun" have greater positive effect on it. For midface, only the intercept shows a positive result which means people have higher probability of getting hurt on midface regardless of other predictors. For other facial trauma site, only "Gender Male" shows positive effect. One reason that can cause this discrepancy is all four trauma sites have very different sample sizes and bigger sample size can help improving the model fitting effect. More information can be found in the four fixed effects table of the models. We also need validation to further assess the effectiveness of this model.
 
 Generalized Linear Mixed-Effects Regression Models are validated by posterior predictive checks and binned residual plots. The posterior predictive checks plot displays the comparison distribution of the observed outcome of trauma site(y) and simulated outcome of trauma site(y_rep) in which both distributions match well in the pattern, but simulated y_rep show more predicted zero which means zero inflation occurred except for the midface. On the other hand, binned residual plots show that almost all the points lie inside the confidence limits for all four trauma sites and there is no abvous pattern in the plots. Therefore, the generalized linear mixed-effects model fits well in assessing the prediction of relationship between all four trauma sites and patients residencies. But other models should be taken into consideration. 
 
