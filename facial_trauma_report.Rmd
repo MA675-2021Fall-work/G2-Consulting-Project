@@ -1,6 +1,6 @@
 ---
-title: "Facial Trauma Report"
-author: "MSSP Consulting G2"
+title: "Facial Trauma Final Report"
+author: "MSSP Consulting Group 2"
 date: "December 12 2021"
 output: pdf_document
 ---
