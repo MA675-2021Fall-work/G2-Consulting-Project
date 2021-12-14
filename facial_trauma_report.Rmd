@@ -145,7 +145,7 @@ Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regr
 
 $$
 \begin{aligned}
-stan\_glmer("Trauma site"  Urban.Rural + Gender  + Injury.Mech.category \\ +
+stan\_glmer("Trauma site" {\sim} Urban.Rural + Gender  + Injury.Mech.category \\ +
 (1+Urban.Rural|Injury.Mech.category), family = binomial(link="logit"))
 \end{aligned}
 $$
