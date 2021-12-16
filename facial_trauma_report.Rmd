@@ -21,7 +21,7 @@ pacman::p_load(
   "dplyr",
   "magrittr",
   "tidyverse",
-  "wakefield", "MatchIt", "tableone", "ggcorrplot", "gridExtra"
+  "wakefield", "MatchIt", "tableone", "ggcorrplot", "gridExtra", "nnet"
 )
 # source("cleaning_and_code_conversion.R")
 # source("facial_zone_dummy.R")
@@ -148,8 +148,8 @@ Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regr
 
 $$
 \begin{aligned}
-stan\_glmer("Trauma site" \sim Urban.Rural + Gender  + Injury.Mech.category \\ +
-(1+Urban.Rural|Injury.Mech.category), family = binomial(link="logit"))
+stan\_glm("Trauma site" \sim Urban.Rural + Gender + Injury.Mech.category \\ + 
+                         Urban.Rural:Injury.Mech.category, family = binomial(link="logit"))
 \end{aligned}
 $$
 
@@ -161,8 +161,8 @@ On the other hand, Figure 8 is the binned residual plot which shows that almost 
 
 ```{r}
 
-ml_mandible <- stan_glmer(mandible ~ Urban.Rural + Gender + Injury.Mech.category + 
-                            (1 + Urban.Rural|Injury.Mech.category), data = cleaned_set, family = binomial(link="logit"), refresh=0)
+ml_mandible <- stan_glm(mandible ~ Urban.Rural + Gender + Injury.Mech.category +
+                          Urban.Rural:Injury.Mech.category, data = cleaned_set, family = binomial(link="logit"), refresh=0)
 #summary(ml_mandible)
 p1<- plot(ml_mandible)+ggtitle("mandible")
 q1 <-pp_check(ml_mandible)+ggtitle("mandible")
@@ -172,8 +172,8 @@ kable(fixef(ml_mandible), "pipe", caption ="Fixed effects of Mandible")
 ```
 
 ```{r}
-ml_superior <- stan_glmer(superior ~ Urban.Rural+ Gender + Injury.Mech.category + 
-                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+ml_superior <- stan_glm(superior ~ Urban.Rural + Gender + Injury.Mech.category +
+                          Urban.Rural:Injury.Mech.category, data = cleaned_set, 
                           family=binomial(link = "logit"), refresh=0)
 # summary(ml_superior)
 p2<-plot(ml_superior) +ggtitle("superior")
@@ -184,8 +184,8 @@ kable(fixef(ml_superior), "pipe", caption="Fixed effects of superior")
 ```
 
 ```{r}
-ml_midface <- stan_glmer(midface ~ Urban.Rural + Gender + Injury.Mech.category + 
-                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+ml_midface <- stan_glm(midface ~ Urban.Rural + Gender + Injury.Mech.category +
+                          Urban.Rural:Injury.Mech.category, data = cleaned_set, 
                           family=binomial(link="logit"), refresh=0)
 # summary(ml_midface)
 p3<- plot(ml_midface)+ggtitle("midface")
@@ -196,8 +196,8 @@ kable(fixef(ml_midface), "pipe", caption = "Fixed effects of midface")
 ```
 
 ```{r}
-ml_other <- stan_glmer(otherff ~ Urban.Rural+ Gender  + Injury.Mech.category + 
-                           (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+ml_other <- stan_glm(otherff ~ Urban.Rural + Gender + Injury.Mech.category +
+                          Urban.Rural:Injury.Mech.category, data = cleaned_set, 
                          family=binomial(link="logit"), refresh=0)
 #summary(ml_other) 
 p4<-plot(ml_other)+ggtitle("other")
@@ -287,6 +287,20 @@ Secondly, after we cleaned the data set we got, we found that there were only 3-
 
 Last but not least, we also found some imbalances in the amount of data caused by objective factors. For example, the number of patients with injuries to the middle face and upper forehead is much more than in the other two weeks. And because of the regional characteristics of Maine, the number of patients injured by guns and bicycles is far less than the number of patients caused by other reasons. These are imbalances that are hard to avoid. The positive aspect is that the imbalance of these data volumes can reflect local characteristics, and the negative aspect is that it will cause some obstacles to model selection. Our suggestion is that, if possible, we hope that more local information can be collected in the future that can contribute more factores in order to make our research results more convincing. Because of the limited time, we did not try more statistical models, but based on the current data situation. Knowledge of machine learning should be helpful.
 
+
+## Multinomial Regression Model
+
+```{r}
+
+mul_site <- multinom(as.matrix(cleaned_set[,8:11]) ~Urban.Rural + Gender + Injury.Mech.category + 
+                       Urban.Rural:Injury.Mech.category, data = cleaned_set, trace=FALSE)
+summary(mul_site)
+tt <- broom::tidy(mul_site,conf.int=TRUE)
+tt <- dplyr::filter(tt, term!="(Intercept)")
+#confint(mul_site)
+ggplot(tt, aes(x=estimate,y=term,colour=y.level))+
+  geom_pointrange(aes(xmin=conf.low, xmax=conf.high))
+```
 
 ## References:
 1. https://icdcodelookup.com/icd-10/codes
