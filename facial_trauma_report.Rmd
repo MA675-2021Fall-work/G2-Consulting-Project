@@ -302,6 +302,8 @@ ggplot(tt, aes(x=estimate,y=term,colour=y.level))+
   geom_pointrange(aes(xmin=conf.low, xmax=conf.high))
 ```
 
+After further consideration, we decided to build a multinomial model as well to quickly compare its results to our prior models. As seen in the plot of the confidence intervals above, the multinomial model suggests that we do not have enough evidence to conclude any of these variables are significant in predicting midface injuries.  In the prediction of mandible injuries and those classified as "other," we see a general trend of the interaction terms having a negative effect, and the individual variables having a postie effect. The only exception to this trend is the gun variable and the interaction term containing gunshot injuries. However, this dataset did not include many instances of gunshot injuries so the lack of data could have skewed this result. In addition, this multinomial plot suggests we do not have enough evidence to conclude that gender plays a significant role in the prediction of any area of facial trauma. 
+
 ## References:
 1. https://icdcodelookup.com/icd-10/codes
 2. https://www.rdocumentation.org/packages/lme4/versions/1.1-27.1/topics/glmer
