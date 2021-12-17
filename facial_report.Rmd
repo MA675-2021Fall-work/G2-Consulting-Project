@@ -292,7 +292,7 @@ Last but not least, we also found some imbalances in the amount of data caused b
 ```{r}
 mul_site <- multinom(as.matrix(cleaned_set[,8:11]) ~Urban.Rural + Gender + Injury.Mech.category + 
                        Urban.Rural:Injury.Mech.category, data = cleaned_set, trace=FALSE)
-summary(mul_site)
+#summary(mul_site)
 tt <- broom::tidy(mul_site,conf.int=TRUE)
 tt <- dplyr::filter(tt, term!="(Intercept)")
 #confint(mul_site)
@@ -328,6 +328,10 @@ From this plot, we can see:
 + For GUN type of injury, rural and urban show similar high possibility of getting hurt in superior and midface. Especially, in urban, the injuries also has relatively low possibility to occur on mandible face and seems impossible to occur on other sites. Similarly, in rural, the injuries also has relatively low possibility to occur on other sites and seems impossible to occur on mandible face.
 
 + For other and other blunt type of injury, urban and rural show almost similarly high possibility of getting hurt on midface. What's more, in rural area, injuries have possibility to occur on other sites.
+
+
+
+
 
 ## References:
 1. https://icdcodelookup.com/icd-10/codes
