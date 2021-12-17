@@ -311,7 +311,7 @@ After further consideration, we decided to build a multinomial model as well to 
 
 + Results:
 
-```{r fig.cap="Prediction of probability of facial trauma sites in different injury mechanisms and different gender"}
+```{r fig.align="center", fig.cap="Prediction of probability of facial trauma sites in different injury mechanisms and different gender", fig.height=10, fig.width=7}
 tabl<-cbind(cleaned_set[,c(5,7,12)],round(fitted(mul_site),2))
 ######## prediction of probability #######
 tablsum <- tabl %>% 
@@ -319,25 +319,29 @@ tablsum <- tabl %>%
   summarise(mandible=mean(mandible),superior=mean(superior),midface=mean(midface),other=mean(otherff)) %>%
   as.data.frame()
 
-tablsum[which(tablsum$Gender=="Male   "),2:6] %>%
+tablsum[which(tablsum$Gender=="Male   "),2:7] %>%
   kable("pipe", caption = "Prediction of probability of facial trauma in Male")
 
-tablsum[which(tablsum$Gender=="Female "),2:6] %>%
+tablsum[which(tablsum$Gender=="Female "),2:7] %>%
   kable("pipe", caption = "Prediction of probability of facial trauma in Female")
 
+#tablsum$Gender <- factor(tablsum$Gender, levels=c("Male", "Female"))
+
 ###### visualization of prediction ######
-ggplot(melt(tablsum,id.vars=c("Gender","Urban.Rural","Injury.Mech.category")))+geom_point()+aes(x=variable,y=value,color=Urban.Rural,group=Urban.Rural)+facet_wrap(Gender~Injury.Mech.category)+coord_polar()+ geom_polygon(fill=NA)
+ggplot(melt(tablsum,id.vars=c("Gender","Urban.Rural","Injury.Mech.category")))+geom_point()+aes(x=variable,y=value,color=Urban.Rural,group=Urban.Rural)+facet_wrap(~Injury.Mech.category+Gender, ncol=2)+coord_polar()+ geom_polygon(fill=NA)
 
 
 ####ignore injury type #####
 #tablsum2 <- tablsum %>% group_by(Gender,Urban.Rural)
 ```
 
+Table 9 and Table 10 show the numeric predicted probabilities of male and female patients on facial trauma sites with respect to patient's residencies in urban or rural and across different injury mechanisms. As we can see in those two table, there is no significant difference of the prediction probability in female and male. Across four trauma sites, there are higher prediction probabilities for midface facial trauma than other three trauma sites.   
+
 In Figure 10, we compare the probability of getting hurt in four facial trauma sites in different residency and injury mechanisms.
 
 From this plot, we can see:
 
-+ Gender shows little influence on the possibility of getting hurt on different facial trauma sites.
++ We organized same injury mechanism with two different genders in the same row, there is no enough evidence to prove that two genders have significant different effect on trauma site prediction.
 
 + For bicycle type of injury, in rural area, the injuries are more likely to occur on superior and midface. In urban area, the injuries are more likely to occur on other sites and mandible face.
 
@@ -349,11 +353,11 @@ From this plot, we can see:
 
 ## Comparison of Two Models
 
-First of all, for Generalized Linear Mixed-Effects model(GLMMs), we see the random effects between "Urban.Rural" and "Injury.Mech.category" are neglectable small because we only have two categories for "Urban.Rural". Therefore, in Multinomial Regression model, we add an interaction between "Urban.Rural" and "Injury.Mech.category" and shows that almost all coefficients of interaction between the injury mechanisms and patients' residencies are significantly negative.
+First of all, for Generalized Linear Mixed-Effects model(GLMMs), we see the random effects between "Urban.Rural" and "Injury.Mech.category" are neglectable small because we only have two categories for "Urban.Rural". Therefore, in Multinomial Regression model, we add an interaction between "Urban.Rural" and "Injury.Mech.category" and shows that almost all coefficients of interaction between the injury mechanisms and patients' residencies are negative except the injury mechanism gun for mandible trauma site.
 
-In addition, GLLMs show us the prediction results of each facial trauma sites individually and somehow it is hard to find correlation between those four trauma sites. But the Multinomial Regression model combined four trauma site as one single outcome and set the minimal prediction result, which is the prediction probability for superior facial trauma site, as the baseline. As shown in Figure 9, we can see more clear and straight forward comparison and correlation between those facial trauma sites to the superior trauma site.  
+In addition, GLMMs show us the prediction results of each facial trauma sites individually and somehow it is hard to find correlation between those four trauma sites. But the Multinomial Regression model combined four trauma site as one single outcome and set the minimal prediction result, which is the prediction probability for superior facial trauma site, as the baseline. As shown in Figure 9, we can see more clear and straight forward comparison and correlation between those facial trauma sites and the superior trauma site.  
 
-Last but not the least, in Figure 7, which is the posterior predictive checks plot for GLMMs, shows many predicted zero for mandible, superior, and other facial trauma sites without information of patients' residencies. But in Figure 10, which is the prediction probability plot of facial trauma sites for urban and rural with different injury mechanisms, gives us a more comprehensive understanding about the relationship between trauma sites, residencies, and injury mechanisms.
+Last but not the least, in Figure 7, which is the posterior predictive checks plot for GLMMs, shows many predicted zero for mandible, superior, and other facial trauma sites without giving detailed estimation information about how each predictor can have impacts on trauma site predictions. But in Figure 10, which is the prediction probability plot of facial trauma sites for urban and rural with respect to different injury mechanisms and genders, gives us a more comprehensive understanding about the relationship between trauma sites, residencies, patient's gender and injury mechanisms.
 
 
 
