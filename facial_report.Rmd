@@ -36,13 +36,13 @@ cleaned_set <- read.csv("cleaned_set.csv")
 
 ## Abstract:
 
-This study is a retrospective review of trauma patients with craniofacial injuries data from 2016-2020 done in partnership with Maine Medical Center (MMC). The purpose of this report is to provide supplementary data analysis to this study with the main goal of analyzing the relationships between areas of facial trauma and numerous predictors, such as residency and mechanism of injury. In this analysis, we will apply the Generalized Linear Mixed-Effect Regression Model, which is best-fit for binary outcomes. We were able to make some preliminary inferences from the model, however, neither residency nor the majority of the injury mechanisms in this dataset appear to be great predictors of the area of facial trauma.
+This study is a retrospective review of trauma patients with craniofacial injuries data from 2016-2020 done in partnership with Maine Medical Center (MMC). The purpose of this report is to provide supplementary data analysis to this study with the main goal of analyzing the relationships between areas of facial trauma and numerous predictors, such as residency and mechanism of injury. In this analysis, we will apply the Generalized Linear Mixed-Effect Regression Model, which is best-fit for binary outcomes. We were able to make some preliminary inferences from the model, however, neither residency nor the majority of the injury mechanisms in this dataset appear to be great predictors of the area of facial trauma. Therefore, we also build a Multinomial Regression Model and compare both models to improve prediction for the outcome. 
 
 
 
 ## Introduction:
 
-Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model which is best-fit for binary outcomes, non-Gaussian distribution variable predictors, and it allows us to add random slope and intercept effects which will also improve model fitting efficiency. 
+Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model(GLMMs) which is best-fit for binary outcomes, non-Gaussian distribution variable predictors, and it allows us to add random slope and intercept effects for model fitting. At end of the report, we build a Multinomial Regression Model and compare it with GLMMs for better model fitting efficiency. 
 
 ## Data Cleaning and Processing:
 
@@ -289,7 +289,7 @@ Last but not least, we also found some imbalances in the amount of data caused b
 
 ## Multinomial Regression Model
 
-```{r}
+```{r fig.align='center', fig.cap="Plot for Multinomial Regression Model"}
 mul_site <- multinom(as.matrix(cleaned_set[,8:11]) ~Urban.Rural + Gender + Injury.Mech.category + 
                        Urban.Rural:Injury.Mech.category, data = cleaned_set, trace=FALSE)
 #summary(mul_site)
@@ -298,15 +298,16 @@ tt <- dplyr::filter(tt, term!="(Intercept)")
 #confint(mul_site)
 ggplot(tt, aes(x=estimate,y=term,colour=y.level))+
   geom_pointrange(aes(xmin=conf.low, xmax=conf.high))
+#fitted(mul_site)
 
 ```
 
-After further consideration, we decided to build a multinomial model as well to quickly compare its results to our prior models. As seen in the plot of the confidence intervals above, the multinomial model suggests that we do not have enough evidence to conclude any of these variables are significant in predicting midface injuries.  In the prediction of mandible injuries and those classified as "other," we see a general trend of the interaction terms having a negative effect, and the individual variables having a postie effect. The only exception to this trend is the gun variable and the interaction term containing gunshot injuries. However, this dataset did not include many instances of gunshot injuries so the lack of data could have skewed this result. In addition, this multinomial plot suggests we do not have enough evidence to conclude that gender plays a significant role in the prediction of any area of facial trauma. 
+After further consideration, we decided to build a multinomial model as well to quickly compare its results to our prior models. As seen in the Figure 9 of the confidence intervals above, the multinomial model suggests that we do not have enough evidence to conclude any of these variables are significant in predicting midface injuries. In the prediction of mandible injuries and those classified as "other," we see a general trend of the interaction terms having a negative effect, and the individual variables having a postive effect. The only exception to this trend is the gun variable and the interaction term containing gunshot injuries. However, this dataset did not include many instances of gunshot injuries so the lack of data could have skewed this result. In addition, this multinomial plot suggests we do not have enough evidence to conclude that gender plays a significant role in the prediction of any area of facial trauma. 
 
 
 + Results:
 
-```{r}
+```{r fig.cap="Prediction of probability of facial trauma sites in differnent injury mechanisms"}
 tabl<-cbind(cleaned_set[,c(7,12)],round(fitted(mul_site),2))
 ######## prediction of probability #######
 tabl %>% 
@@ -318,7 +319,7 @@ tabl %>%
 ggplot(melt(tabl,id.vars=c("Urban.Rural","Injury.Mech.category")))+geom_point()+aes(x=variable,y=value,color=Urban.Rural,group=Urban.Rural)+facet_wrap(~Injury.Mech.category)+coord_polar()+ geom_polygon(fill=NA)
 ```
 
-In this plot, we compare the probability of getting hurt in four facial trauma sites in different residency and injury mechanisms.
+In Figure 10, we compare the probability of getting hurt in four facial trauma sites in different residency and injury mechanisms.
 
 From this plot, we can see:
 
@@ -330,7 +331,13 @@ From this plot, we can see:
 
 + For other and other blunt type of injury, urban and rural show almost similarly high possibility of getting hurt on midface. What's more, in rural area, injuries have possibility to occur on other sites.
 
+## Comparison of Two Models
 
+First of all,for Generalized Linear Mixed-Effects model(GLMMs), we see the random effects between "Urban.Rural" and "Injury.Mech.category" are neglectable small because we only have two categories for "Urban.Rural. Therefore, in Multinomial Regression model, we add an interaction between "Urban.Rural" and "Injury.Mech.category" and shows that almost all coefficients of interaction between the injury mechanisms and patients' residencies are signigicantly negative.
+
+In addition, GLLMs show us the prediction result of each facial trauma sites individually and somehow it is hard to find correlation between those four trauma sites. But the Multinomial Regression model combined four trauma site as one single outcome and set the minimal prediction effect, which is the prediction probability for superior facial trauma site, as the baseline. As shown in Figure 9, we can see more clear and straight forward comparison and correlation between those facial trauma sites.   
+
+Last but not the least, in Figure 7, which is the posterior predictive checks plot for GLMMs, shows many predicted zero for mandible, superior, and other facial trauma sites without information of patients' residencies. But in Figure 10, which is the prediction probability plot of facial trauma sites for urban and rural with different injury mechanisms, gives us a more comprehensive understanding about the relationship between those three variables. 
 
 
 
