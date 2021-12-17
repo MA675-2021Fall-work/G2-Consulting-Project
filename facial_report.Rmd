@@ -321,6 +321,7 @@ ggplot(melt(tabl,id.vars=c("Urban.Rural","Injury.Mech.category")))+geom_point()+
 In this plot, we compare the probability of getting hurt in four facial trauma sites in different residency and injury mechanisms.
 
 From this plot, we can see:
+
 + For bicycle type of injury, in rural area, the injuries are more likely to occur on superior and midface. In urban area, the injuries are more likely to occur on other sites and mandible face.
 
 + For falls and MVC type of injury, rural and urban shows no significant difference in possibility of getting hurt in four facial trauma sites.
