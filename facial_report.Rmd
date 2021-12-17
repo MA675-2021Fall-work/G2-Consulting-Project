@@ -1,0 +1,335 @@
+---
+title: "Facial Trauma Analysis Final Report"
+author: "Andrew Sisitzky, Daniel(Chen) Xu, Mi Zhang, Shuting Li"
+date: "December 14 2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning= FALSE, echo=FALSE, message=FALSE)
+knitr::opts_chunk$set(fig.width = 12, fig.height = 6,fig.align = "center") 
+pacman::p_load(
+  "ggplot2",
+  "knitr",
+  "arm",
+  "rstanarm",
+  "foreign",
+  "bayesplot",
+  "glmx",
+  "reshape2",
+  "VGAM",
+  "dplyr",
+  "magrittr",
+  "tidyverse",
+  "wakefield", "MatchIt", "tableone", "ggcorrplot", "gridExtra", "nnet"
+)
+# source("cleaning_and_code_conversion.R")
+# source("facial_zone_dummy.R")
+# source("data_cleaning_subsetting.R")
+# source("visualization.R")
+```
+
+```{r}
+cleaned_set <- read.csv("cleaned_set.csv")
+```
+
+
+## Abstract:
+
+This study is a retrospective review of trauma patients with craniofacial injuries data from 2016-2020 done in partnership with Maine Medical Center (MMC). The purpose of this report is to provide supplementary data analysis to this study with the main goal of analyzing the relationships between areas of facial trauma and numerous predictors, such as residency and mechanism of injury. In this analysis, we will apply the Generalized Linear Mixed-Effect Regression Model, which is best-fit for binary outcomes. We were able to make some preliminary inferences from the model, however, neither residency nor the majority of the injury mechanisms in this dataset appear to be great predictors of the area of facial trauma.
+
+
+
+## Introduction:
+
+Facial Trauma, also called maxillofacial trauma, involves different facial trauma sites and injury mechanisms. In this report, our main focus is to explore a facial trauma database collected for any patient with facial trauma admitted in Maine Medical Center from 2016 to 2020. The goal of this project is to analyze the relationship between patient’s injury sites and residency aiming to design specific facial trauma treatment plans for future patients with respect to their residency, from urban or rural areas; and provide efficient treatment corresponding to their facial trauma injury sites. For better access to facial trauma prediction, we are going to apply the Generalized Linear Mixed-Effect Regression Model which is best-fit for binary outcomes, non-Gaussian distribution variable predictors, and it allows us to add random slope and intercept effects which will also improve model fitting efficiency. 
+
+## Data Cleaning and Processing:
+
+For ICD codes: The major differences between the two coding systems include the number of characters involved. ICD-9 has up to five characters while ICD-10 has up to seven. ICD-10 adds laterality to the coding system, which ICD-9 lacks. ICD-10 offers much more specificity, including episodes of care, body area, etc. Also, the ICD-10 coding structure utilizes a dummy placeholder, which ICD-9 does not. Because the clients plan to analyze the injury area differences in facial trauma patients in urban and rural settings. Transformation of ICD codes is very important.
+
+For cause of injury(Injury mechanism): From the data screening provided by the client, we found that there are 10 levels for injury mech in the dataset and some of them are same at some content, for example, there are several mechanisms for falls but with different falling height. We need to categorize them in order to tidy the dataset for further use.
+
+For categorization of ICD10 codes: Now we have the ICD10 codes, but what we want to study is the relationship between areas of facial trauma instead of the codes. So we need to categorize the codes to specific areas of injury: as the client instructs, we categorize the codes into four levels: Midface, Mandible, Superior and other facial trauma sites for further use.
+
+When we want to do ICD Code transformation Among 318 patients, we found that 158 of them are recorded with ICD 9, while 160 take ICD 10. When the client tried to convert ICD 9 code into ICD 10 code. He encountered two major problems: A) Not Convertible: 75 out of 432 ICD 9 code can not be converted to ICD 10 code. B) Multiple Converted: 143 of the ICD 9 codes can be converted into multiple ICD 10 codes. In order to solve these two major problems. We plan to solve B first. After solving B, we can drop the codes mentioned in A and only leave the useful observations for further analysis.
+
+To solve problem A. For the tidy dataset so far, we now have 211 patients with corresponding injury areas. For the rest of the observations, our client David conducted a more detailed investigation and he gave a table for the corresponding convertible codes for us to do the conversion. After finalizing the conversion, we are now having 292 observations for the further analysis. To solve problem B, we first let all the missing values be blank. And use for loops for each ICD9 code column, when the ICD9 column has the code that can be converted to useful ICD10 codes, then we assign the converted ICD10 codes to the corresponding ICD10 code column.  Categorization of codes (ICD10) Among 318 patients, 311 of them have explicit injury mechanism records, 7 of them are blank or not clarified clearly. For 311 patients who have records, we extracted the key words of descriptions, and divided them into 6 categories:
+
+| Converted injury mechanism categories |Original injury mechanism               |
+| :---:                                 |:------                                 |
+|MVC                                    |Motorcycle, MVC              |
+|Falls                                  |Fall under 1m, Fall 1m-6m, Fall over 6m|
+|Gun                                    |Hand gun, Shotgun          |
+|Others                                 |Other, Assault, Biting, Pedestrian, 0|
+| Bicycle                               |Bicycle                               |
+|Other_Blunt                            |Blunt Mechanism              |
+
+## Data Description:
+
+
+| Variable                                  | Explanation                              | Description |
+| :---:                                     | :---:                                    |:---:              |
+| Study.ID..                                | ID for Patients                          | Total 292 observations left |
+| Age                                       | Age information for patients             | From 17 to 90 | 
+| Gender                                    | Gender information for patients          | Male, Female | 
+| Race                                      | Ethnicity information for patients  | Asian, White, African American and Other Races|
+| Urban.Rural                               | Living area information for patients | Urban and Rural|
+| Superior                                  | Dummy variable to check if patient was hurt on Superior site |Binary |
+| Mandible                                  | Dummy variable to check if patient was hurt on Mandible site |Binary |
+| Midface                                   | Dummy variable to check if patient was hurt on Midface site |Binary |
+| Otherff                                   | Dummy variable to check if patient was hurt on other face trauma site|Binary |
+| Injury.Mech.category                      | Variable to check what mechanisms caused facial trauma| 6 mechs as showed above|
+
+In order to show the information of the data set and the relationship between various variables more intuitively, let's move to our EDA part:
+
+
+## EDA:
+
+After data cleaning and processing, we started our exploratory data analysis. As shown in Figure 1, 2, 3, and 4, there are more data samples collected from midface injury patients than the other three facial trauma sites. Among all four facial trauma sites, falls and motor vehicle accidents are the two major types of injury mechanisms for both residency areas. It is hard not to notice that people in rural areas have more facial trauma caused by MVCs than people with facial trauma in urban areas. In addition, we have a small sample size for the injury mechanism of “Gun”  which makes sense because gunshot accidents are rare in our daily life, gunshot accidents can cause immediate death that do not even have a chance to be admitted into hospital for treatment, and gunshots are majorly targets on midface and superior. 
+
+Figure 5 is a bar plot which compares the different population sizes of people with  facial trauma and bars are filled with color coded facial injury mechanism categories. From the bar plot, we can see that the database consists of more male patients than female patients. Falls and motor vehicle accidents are the two major types of injury mechanisms for both female and male patients. 
+
+```{r}
+options(mc.cores = parallel::detectCores())
+
+cleaned_set$Age <- as.numeric(cleaned_set$Age)
+cleaned_set$Gender <- as.factor(cleaned_set$Gender)
+cleaned_set$Urban.Rural <- as.factor(cleaned_set$Urban.Rural)
+cleaned_set$Injury.Mech.category <- as.factor(cleaned_set$Injury.Mech.category)
+
+mandible_sub <- subset(cleaned_set, mandible == 1)
+superior_sub <- subset(cleaned_set, superior == 1)
+midface_sub <- subset(cleaned_set, midface == 1)
+otherff_sub <- subset(cleaned_set, otherff == 1)
+```
+
+```{r fig.align='center', fig.cap="Midface area injured patient number vs. demographic information"}
+ggplot(midface_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+```
+
+```{r fig.align='center', fig.cap= "Superior area injured patient number vs. demographic information"}
+ggplot(superior_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+```
+
+```{r fig.align='center', fig.cap="Mandible area injured patient number vs. demographic information"}
+ggplot(mandible_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+
+```
+
+```{r fig.align='center', fig.cap= "Other facial trauma  sites injured patient number vs. demographic information"}
+ggplot(otherff_sub, aes(x = Urban.Rural, fill = Urban.Rural))+
+  geom_bar(stat = "count", position = "dodge")+
+  facet_wrap(~Injury.Mech.category)
+
+```
+
+```{r fig.align='center', fig.cap="Distribution for injury mech for different gender"}
+ggplot(cleaned_set)+
+  aes(x = Gender, fill = Injury.Mech.category)+
+  geom_bar(stat = "count", position = "dodge")
+
+```
+
+\newpage
+
+## Model Fitting:
+
+Based on finding from our EDAs, we use the Generalized Linear Mixed-Effects Regression Model to estimate the mixed effects of getting facial trauma in one of four trauma sites using "Urban.Rural", "Gender", and "Injury.Mech.category" as the predictors, add "Urban.Rural" for the random slope effect, and use "Injury.Mech.catergory" as the random intercept. The function of the model is shown below:
+
+$$
+\begin{aligned}
+stan\_glmer("Trauma site" \sim Urban.Rural + Gender  + Injury.Mech.category \\ +
+(1+Urban.Rural|Injury.Mech.category), family = binomial(link="logit"))
+\end{aligned}
+$$
+
+By arranging all four fitted models into one plot in Figure 6, we can see the same model generates different results in different trauma sites. In Figure 6, we are trying to compare which predictor estimation of the model mentioned above has a significant difference from 0 which is the vertical line shown in the plots. For mandible facial trauma site(upper left), we can see that "Urban.Rural" and "Injury.Mech.category Others" have positive effects while "Gender Male", "Injury.Mech.category Falls" and "Injury.Mech.category Gun" show negative effects. For the superior facial trauma site(upper right), "Gender Male" and "Injury.Mech.category Gun" have greater positive effects while "Injury.Mech.category Falls", "Injury.Mech.category MVC", "Injury.Mech.category Other Blunts", and "Injury.Mech.category Others" show significant negative effects. For the midface facial trauma site(lower left), only the intercept shows a positive result which means people have a higher probability of getting hurt on the midface regardless of other predictors. In addition, we do not have enough evidence to prove that patients' residences, which is on the vertical line, have an effect in predicting midface trauma site and all injury mechanisms show negative effects for predicting midface facial trauma. For other facial trauma site(lower right), only "Gender Male" shows a positive effect and all other predictors, such as patients' residence and injury mechanisms, show negative effects. Tables 3, 4, 5, 6 show us the numeric results of the fixed effect of each predictor on the trauma site and can be used for more detailed comparisons. From Table 6 we can see that there is a higher response effect on midface trauma than the other three trauma sites. One reason that can cause this discrepancy in midface than others is that all other three trauma sites have relatively smaller sample sizes and bigger sample size can help improve the model fitting effect. We also need validation to further assess the effectiveness of this model.
+
+Generalized Linear Mixed-Effects Regression Models are validated by posterior predictive checks and binned residual plots. Figure 7 is the posterior predictive checks plots of the fitted models of four trauma sites which display the comparison distribution of the observed outcome of trauma site(y) and simulated outcome of trauma site(y_rep) in which both distributions match well in the overall pattern. However, some simulated y_reps show more predicted zero(shown on the y-axis) in the superior, mandible, and other trauma sites which means there are fewer probabilities of getting facial trauma on those facial areas. We also see a few simulations(y_rep) that do not match well in superior and midface trauma sites which can be estimation error or model fitting inefficiency. But the overall simulations work well for our model fitting.
+
+On the other hand, Figure 8 is the binned residual plot which shows that almost all the points lie inside the confidence limits(the upper and lower bounds) for all four trauma sites and there is no obvious pattern in the plots. On the other hand, we can see the confidence limits are narrowed on binned residual plots for mandible and other facial trauma sites while broader for midface and superior. Again, this can be caused by the sample size differences. Therefore, the generalized linear mixed-effects model fits well overall in assessing the prediction of the relationship between trauma sites and patients residencies as validated by the posterior predictive checks plots and binned residual plots. But other models should be taken into consideration to accommodate small sample sizes. 
+
+```{r}
+
+ml_mandible <- stan_glmer(mandible ~ Urban.Rural + Gender + Injury.Mech.category + 
+                            (1 + Urban.Rural|Injury.Mech.category), data = cleaned_set, family = binomial(link="logit"), refresh=0)
+#summary(ml_mandible)
+p1<- plot(ml_mandible)+ggtitle("mandible")
+q1 <-pp_check(ml_mandible)+ggtitle("mandible")
+
+kable(fixef(ml_mandible), "pipe", caption ="Fixed effects of Mandible")
+
+```
+
+```{r}
+ml_superior <- stan_glmer(superior ~ Urban.Rural+ Gender + Injury.Mech.category + 
+                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+                          family=binomial(link = "logit"), refresh=0)
+# summary(ml_superior)
+p2<-plot(ml_superior) +ggtitle("superior")
+q2<- pp_check(ml_superior) +ggtitle("superior")
+
+kable(fixef(ml_superior), "pipe", caption="Fixed effects of superior")
+
+```
+
+```{r}
+ml_midface <- stan_glmer(midface ~ Urban.Rural + Gender + Injury.Mech.category + 
+                            (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+                          family=binomial(link="logit"), refresh=0)
+# summary(ml_midface)
+p3<- plot(ml_midface)+ggtitle("midface")
+q3 <- pp_check(ml_midface) +ggtitle("midface")
+
+kable(fixef(ml_midface), "pipe", caption = "Fixed effects of midface")
+
+```
+
+```{r}
+ml_other <- stan_glmer(otherff ~ Urban.Rural+ Gender  + Injury.Mech.category + 
+                           (1 + Urban.Rural| Injury.Mech.category), data = cleaned_set, 
+                         family=binomial(link="logit"), refresh=0)
+#summary(ml_other) 
+p4<-plot(ml_other)+ggtitle("other")
+q4 <- pp_check(ml_other)+ggtitle("other")
+
+kable(fixef(ml_other), "pipe", caption = "Fixed Effects of other")
+
+```
+
+```{r fig.align='center', fig.cap="Plots of model fitting for four trauma sites"}
+
+grid.arrange(p1,p2,p3,p4, ncol=2)
+
+```
+
+```{r fig.align='center', fig.cap="Posterior Predictive Checks Plots for Four Trauma Sites"}
+grid.arrange(q1,q2,q3,q4,ncol=2)
+
+```
+
+```{r fig.align='center', fig.cap="Binned Residual Plots for Model Fitting"}
+par(mfrow= c(2,2))
+r1<- binnedplot(fitted(ml_mandible), resid(ml_mandible, type = "response"),main="Binned residual plot for mandible")
+r2 <- binnedplot(fitted(ml_superior), resid(ml_superior, type = "response"),main="Binned residual plot for superior")
+r3<- binnedplot(fitted(ml_midface), resid(ml_midface, type = "response"), main="Binned residual plot for midface")
+r4<- binnedplot(fitted(ml_other), resid(ml_other, type = "response"), main="Binned residual plot for other")
+
+```
+
+
+## Result:
+
+### Comparison:
+
+From the estimates of model fitting, we can use 1/4 beta principle to do some preliminary inferences as below, all percentages are multiple effects:
+
+Firstly, a patient's age has no influence on facial trauma sites, which means, we do not have enough evidence to prove that people with different ages have different possibilities to getting hurt on different facial trauma sites. So we remove it from our model.
+
+Secondly, for patients with the same injury mechanism and from the same residency, men have 16% more possibility to get hurt at superior and 10% at other facial sites compared with women. Similarly, women are more likely to get hurt at mandible and midface, the effect levels are 11% and 10%.
+
+Thirdly, injury mechanisms also show their impacts on facial trauma sites. For patients with the same gender and from the same residency, they are 29% less likely to get hurt at other facial trauma site if they are hurt by a gun. For patients hurt by falls, they are 22% less likely to get hurt at midface. For patients hurt because of motorcycles, there are no significant effect on the facial trauma site.For patients with other blunt and other injury mechanisms in our sample, they show 19% and 31% less possibility of getting hurt at superior face. What's more, other injury type also shows -27% effect on midface.
+
+Fourthly, for patients with the same gender and same injury mechanism, if the accidents occur in urban areas, patients are approximately 7% more likely to get hurt at mandible face, and 5% or so less likely at superior face. For patients hurt by falls/ MVC/ bicycle/ Gun/ other/ other blunt, urban patients have approximately 3%/ 5%/ 7%/ 12%/ 13%/ 16% less possibility get hurt at other trauma site than patients with same injury type from rural. Because injury mechanisms will influence the effect level of residency, so this is why we choose residency as our random slope. For midface trauma site, patients’ residency shows no significant difference.
+
+
+### Prediction:
+
+Based on our model, we did posterior prediction about each factors, the output shows below:
+
+```{r,include=FALSE}
+pred_mandible <- apply(posterior_predict(ml_mandible,data=cleaned_set),2,sum)
+pred_superior <- apply(posterior_predict(ml_superior,data=cleaned_set),2,sum)
+pred_midface <- apply(posterior_predict(ml_midface,data=cleaned_set),2,sum)
+pred_other <- apply(posterior_predict(ml_other,data=cleaned_set),2,sum)
+
+df <- as.data.frame(cleaned_set[,c(5,7,12)])
+df$mandible <- pred_mandible/4000
+df$superior <- pred_superior/4000
+df$midface <- pred_midface/4000
+df$other <- pred_other/4000
+colnames(df)
+df1 <- df %>% 
+  group_by(Gender,Urban.Rural,Injury.Mech.category) %>% 
+  summarise(mandible=mean(mandible),superior=mean(superior),midface=mean(midface),other=mean(other))
+```
+
+```{r,echo=FALSE}
+kable(df1, "pipe", caption = "Prediction of probability of getting hurt on facial sites")
+```
+
+
+## Discussion:
+
+Generalized Linear Mixed-Effects Regression Models
+
+When using this model, we can use the confidence interval to evaluate the statistical significance of variable effects. Age has a non-significant effect on four facial trauma sites, but gender has statistical significant effect on all facial trauma sites at a significant level of 0.5. For injury mechanisms, on one shows significant effect on mandible face, but for superior face, all injury mechanisms are significant except falls. And for midface, falls, gun, others are have significant effect, but for other facial taruma sites, only gun shows significant negative effect.
+Here we set significant level at 0.5 because our data will not show any statistically significant effect if we use higher confidence level. In this case, one might explore this further by using larger sample. Repeating the study with a larger sample would certainly not guarantee a statistically significant result, but it would provide a more precise estimate. 
+
+To interpret the random effect, as we mentioned above, each injury mechanism has its own intercept and slope, which means, there exists difference within each sample group of different injury mechanisms. From the plot above, we can see the coefficient of random effects are not significantly different from 0, which means, the multilevel model’s shrink effect is not so well, so in the future, we can try logistic regression without random effect and add some interactions terms. 
+
+
+## Phenomena and future Steps:
+
+Firstly, the data we used was collected from one hospital in one state. We understand that this data collection approach will allow hospitals to tailor treatments for facial injury patients from different residential areas to local characteristics in Maine. However, if our client wants to extend this method of improving diagnostic efficiency to the entire East Coast and even the entire United States, we suggest that we can select representative hospitals in each state to collect data and conduct more overall data analysis and modeling. 
+
+Secondly, after we cleaned the data set we got, we found that there were only 3-4 factors we can use for building models for checking the relationship between patients' living areal information and the facial trauma sites they got hurt. And we also noticed the information about the patient’s place of residence. Our customer divides it into urban and rural areas. We understand that in this way, we can more efficiently derive the relationships that our customers want. But this will also limit our model construction and overly generalize the patient's residence information. Because the diversity of residence will also have a certain impact on the injured area of the patient's face. If our clients want to allow the hospital to formulate more accurate treatment methods for patients with facial trauma from different living areas, we suggest that we can add some residential information. 
+
+Last but not least, we also found some imbalances in the amount of data caused by objective factors. For example, the number of patients with injuries to the middle face and upper forehead is much more than in the other two weeks. And because of the regional characteristics of Maine, the number of patients injured by guns and bicycles is far less than the number of patients caused by other reasons. These are imbalances that are hard to avoid. The positive aspect is that the imbalance of these data volumes can reflect local characteristics, and the negative aspect is that it will cause some obstacles to model selection. Our suggestion is that, if possible, we hope that more local information can be collected in the future that can contribute more factores in order to make our research results more convincing. Because of the limited time, we did not try more statistical models, but based on the current data situation. Knowledge of machine learning should be helpful.
+
+## Multinomial Regression Model
+
+```{r}
+mul_site <- multinom(as.matrix(cleaned_set[,8:11]) ~Urban.Rural + Gender + Injury.Mech.category + 
+                       Urban.Rural:Injury.Mech.category, data = cleaned_set, trace=FALSE)
+summary(mul_site)
+tt <- broom::tidy(mul_site,conf.int=TRUE)
+tt <- dplyr::filter(tt, term!="(Intercept)")
+#confint(mul_site)
+ggplot(tt, aes(x=estimate,y=term,colour=y.level))+
+  geom_pointrange(aes(xmin=conf.low, xmax=conf.high))
+
+```
+
+After further consideration, we decided to build a multinomial model as well to quickly compare its results to our prior models. As seen in the plot of the confidence intervals above, the multinomial model suggests that we do not have enough evidence to conclude any of these variables are significant in predicting midface injuries.  In the prediction of mandible injuries and those classified as "other," we see a general trend of the interaction terms having a negative effect, and the individual variables having a postie effect. The only exception to this trend is the gun variable and the interaction term containing gunshot injuries. However, this dataset did not include many instances of gunshot injuries so the lack of data could have skewed this result. In addition, this multinomial plot suggests we do not have enough evidence to conclude that gender plays a significant role in the prediction of any area of facial trauma. 
+
+
++ Results:
+
+```{r}
+tabl<-cbind(cleaned_set[,c(7,12)],round(fitted(mul_site),2))
+######## prediction of probability #######
+tabl %>% 
+  group_by(Urban.Rural,Injury.Mech.category) %>% 
+  summarise(mandible=mean(mandible),superior=mean(superior),midface=mean(midface),other=mean(otherff)) %>%
+  kable("pipe", caption = "Prediction of probability of facial trauma")
+
+###### visualization of prediction ######
+ggplot(melt(tabl,id.vars=c("Urban.Rural","Injury.Mech.category")))+geom_point()+aes(x=variable,y=value,color=Urban.Rural,group=Urban.Rural)+facet_wrap(~Injury.Mech.category)+coord_polar()+ geom_polygon(fill=NA)
+```
+
+In this plot, we compare the probability of getting hurt in four facial trauma sites in different residency and injury mechanisms.
+
+From this plot, we can see:
++ For bicycle type of injury, in rural area, the injuries are more likely to occur on superior and midface. In urban area, the injuries are more likely to occur on other sites and mandible face.
+
++ For falls and MVC type of injury, rural and urban shows no significant difference in possibility of getting hurt in four facial trauma sites.
+
++ For GUN type of injury, rural and urban show similar high possibility of getting hurt in superior and midface. Especially, in urban, the injuries also has relatively low possibility to occur on mandible face and seems impossible to occur on other sites. Similarly, in rural, the injuries also has relatively low possibility to occur on other sites and seems impossible to occur on mandible face.
+
++ For other and other blunt type of injury, urban and rural show almost similarly high possibility of getting hurt on midface. What's more, in rural area, injuries have possibility to occur on other sites.
+
+## References:
+1. https://icdcodelookup.com/icd-10/codes
+2. https://www.rdocumentation.org/packages/lme4/versions/1.1-27.1/topics/glmer
+3. https://stats.idre.ucla.edu/r/dae/mixed-effects-logistic-regression/
