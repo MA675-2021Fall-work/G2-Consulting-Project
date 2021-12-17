@@ -291,7 +291,6 @@ Last but not least, we also found some imbalances in the amount of data caused b
 ## Multinomial Regression Model
 
 ```{r}
-
 mul_site <- multinom(as.matrix(cleaned_set[,8:11]) ~Urban.Rural + Gender + Injury.Mech.category + 
                        Urban.Rural:Injury.Mech.category, data = cleaned_set, trace=FALSE)
 summary(mul_site)
@@ -303,6 +302,34 @@ ggplot(tt, aes(x=estimate,y=term,colour=y.level))+
 ```
 
 After further consideration, we decided to build a multinomial model as well to quickly compare its results to our prior models. As seen in the plot of the confidence intervals above, the multinomial model suggests that we do not have enough evidence to conclude any of these variables are significant in predicting midface injuries.  In the prediction of mandible injuries and those classified as "other," we see a general trend of the interaction terms having a negative effect, and the individual variables having a postie effect. The only exception to this trend is the gun variable and the interaction term containing gunshot injuries. However, this dataset did not include many instances of gunshot injuries so the lack of data could have skewed this result. In addition, this multinomial plot suggests we do not have enough evidence to conclude that gender plays a significant role in the prediction of any area of facial trauma. 
+
+
++ Results:
+
+```{r}
+tabl<-cbind(cleaned_set[,c(7,12)],round(fitted(mul_site),2))
+######## prediction of probability #######
+tabl %>% 
+  group_by(Urban.Rural,Injury.Mech.category) %>% 
+  summarise(mandible=mean(mandible),superior=mean(superior),midface=mean(midface),other=mean(otherff)) %>%
+  kable("pipe", caption = "Prediction of probability of facial trauma")
+
+###### visualization of prediction ######
+ggplot(melt(tabl,id.vars=c("Urban.Rural","Injury.Mech.category")))+geom_point()+aes(x=variable,y=value,color=Urban.Rural,group=Urban.Rural)+facet_wrap(~Injury.Mech.category)+coord_polar()+ geom_polygon(fill=NA)
+```
+
+In this plot, we compare the probability of getting hurt in four facial trauma sites in different residency and injury mechanisms.
+
+From this plot, we can see:
++ For bicycle type of injury, in rural area, the injuries are more likely to occur on superior and midface. In urban area, the injuries are more likely to occur on other sites and mandible face.
+
++ For falls and MVC type of injury, rural and urban shows no significant difference in possibility of getting hurt in four facial trauma sites.
+
++ For GUN type of injury, rural and urban show similar high possibility of getting hurt in superior and midface. Especially, in urban, the injuries also has relatively low possibility to occur on mandible face and seems impossible to occur on other sites. Similarly, in rural, the injuries also has relatively low possibility to occur on other sites and seems impossible to occur on mandible face.
+
++ For other and other blunt type of injury, urban and rural show almost similarly high possibility of getting hurt on midface. What's more, in rural area, injuries have possibility to occur on other sites.
+
+
 
 ## References:
 1. https://icdcodelookup.com/icd-10/codes
